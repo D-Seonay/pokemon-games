@@ -1,4 +1,4 @@
-# Pokémon Find
+# Pokémon games
 
 Un jeu web où un numéro du Pokédex national s'affiche et où le joueur doit nommer le
 Pokémon correspondant, en 15 secondes, sans indice. Le score récompense la proximité :
