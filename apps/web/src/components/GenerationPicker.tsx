@@ -1,9 +1,10 @@
 import { ALL_GENERATIONS, type GenerationId } from "@pkfind/shared";
+import { useI18n } from "../i18n/I18nContext.js";
 import { Button } from "./Button.js";
 
 type Props = { value: GenerationId[]; onChange: (next: GenerationId[]) => void };
 
-const REGIONS: Record<GenerationId, string> = {
+const REGIONS_FR: Record<GenerationId, string> = {
   1: "Kanto",
   2: "Johto",
   3: "Hoenn",
@@ -15,24 +16,40 @@ const REGIONS: Record<GenerationId, string> = {
   9: "Paldea",
 };
 
+const REGIONS_EN: Record<GenerationId, string> = {
+  1: "Kanto",
+  2: "Johto",
+  3: "Hoenn",
+  4: "Sinnoh",
+  5: "Unova",
+  6: "Kalos",
+  7: "Alola",
+  8: "Galar",
+  9: "Paldea",
+};
+
 export function GenerationPicker({ value, onChange }: Props) {
+  const { lang, t } = useI18n();
+  const regions = lang === "en" ? REGIONS_EN : REGIONS_FR;
+
   function toggle(gen: GenerationId): void {
     if (value.includes(gen)) {
       if (value.length === 1) return; // au moins une génération doit rester cochée
-      onChange(value.filter((item) => item !== gen));
-      return;
+      onChange(value.filter((g) => g !== gen));
+    } else {
+      onChange([...value, gen].sort((a, b) => a - b));
     }
-    onChange([...value, gen].sort((a, b) => a - b));
   }
 
   return (
     <fieldset className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm">
       <legend className="px-2 text-xs font-bold uppercase tracking-wider text-[var(--text-dim)]">
-        Générations
+        {t.generationsLabel}
       </legend>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {ALL_GENERATIONS.map((gen) => {
           const checked = value.includes(gen);
+          const genLabel = lang === "en" ? `Generation ${gen}` : `Génération ${gen}`;
           return (
             <label
               key={gen}
@@ -45,14 +62,14 @@ export function GenerationPicker({ value, onChange }: Props) {
               <div className="flex items-center gap-2.5">
                 <input
                   type="checkbox"
-                  aria-label={`Génération ${gen}`}
+                  aria-label={genLabel}
                   checked={checked}
                   onChange={() => toggle(gen)}
                   className="accent-[var(--accent)] h-4 w-4 cursor-pointer"
                 />
-                <span className="mono font-bold text-sm">Gén {gen}</span>
+                <span className="text-sm font-semibold">{genLabel}</span>
               </div>
-              <span className="text-[11px] font-medium opacity-60">{REGIONS[gen]}</span>
+              <span className="text-xs font-medium text-[var(--text-dim)]">{regions[gen]}</span>
             </label>
           );
         })}
@@ -64,7 +81,7 @@ export function GenerationPicker({ value, onChange }: Props) {
           onClick={() => onChange([...ALL_GENERATIONS])}
           className="text-xs py-2"
         >
-          Tout sélectionner
+          {lang === "en" ? "Select All" : "Tout sélectionner"}
         </Button>
         <Button
           type="button"
@@ -72,7 +89,7 @@ export function GenerationPicker({ value, onChange }: Props) {
           onClick={() => onChange([1])}
           className="text-xs py-2"
         >
-          Gén 1 seulement
+          {lang === "en" ? "Gen 1 only" : "Gén 1 seulement"}
         </Button>
       </div>
     </fieldset>

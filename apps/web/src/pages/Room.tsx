@@ -7,31 +7,33 @@ import {
 } from "@pkfind/shared";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { BlitzRoom } from "../blitz/BlitzRoom.js";
+import { GameModePicker } from "../blitz/GameModePicker.js";
 import { Alert } from "../components/Alert.js";
 import { BackLink } from "../components/BackLink.js";
 import { Button } from "../components/Button.js";
 import { CopyButton } from "../components/CopyButton.js";
 import { GenerationPicker } from "../components/GenerationPicker.js";
+import { MultiReveal } from "../components/MultiReveal.js";
 import { PokedexBrowser } from "../components/PokedexBrowser.js";
+import { PokemonCombobox } from "../components/PokemonCombobox.js";
 import { PokemonSprite } from "../components/PokemonSprite.js";
 import { QrCode } from "../components/QrCode.js";
-import { BlitzRoom } from "../blitz/BlitzRoom.js";
-import { GameModePicker } from "../blitz/GameModePicker.js";
-import { formatBlitzDuration } from "./BlitzSetup.js";
 import { RoundTimingPicker } from "../components/RoundTimingPicker.js";
-import { MultiReveal } from "../components/MultiReveal.js";
-import { PokemonCombobox } from "../components/PokemonCombobox.js";
 import { Scoreboard } from "../components/Scoreboard.js";
 import { TargetNumber } from "../components/TargetNumber.js";
 import { Timer } from "../components/Timer.js";
+import { useI18n } from "../i18n/I18nContext.js";
 import { useRoom } from "../net/useRoom.js";
 import { KEYS, readJson } from "../storage/local.js";
+import { formatBlitzDuration } from "./BlitzSetup.js";
 
 export function Room() {
+  const { lang, t, pokemonName } = useI18n();
   const { code = "" } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const nickname = readJson(KEYS.nickname, "Dresseur");
+  const nickname = readJson(KEYS.nickname, lang === "en" ? "Trainer" : "Dresseur");
   const room = useRoom({
     code,
     nickname,
@@ -81,7 +83,15 @@ export function Room() {
   // elle a besoin d'y distinguer un vrai démontage d'un remount `<StrictMode>` synchrone, ce
   // que seul le hook peut faire puisque c'est lui qui possède la ref de jointure à réarmer.
 
-  if (room.closed) return <p>La room a été fermée ({room.closed}).</p>;
+  if (room.closed) {
+    return (
+      <p>
+        {lang === "en"
+          ? `The room was closed (${room.closed}).`
+          : `La room a été fermée (${room.closed}).`}
+      </p>
+    );
+  }
   // Erreur fatale : uniquement issue du chemin de jointure (room introuvable, pleine,
   // partie déjà commencée, jeton invalide…). Le joueur ne peut vraiment pas continuer, donc
   // elle remplace tout l'écran pour le reste de la session. Toute erreur d'action
@@ -92,11 +102,11 @@ export function Room() {
     return (
       <section className="flex flex-col gap-4">
         <Alert tone="error">{room.error}</Alert>
-        <BackLink label="Retour à l'accueil" />
+        <BackLink label={t.errorBoundaryReturn} />
       </section>
     );
   }
-  if (!room.state) return <p>Connexion…</p>;
+  if (!room.state) return <p>{lang === "en" ? "Connecting…" : "Connexion…"}</p>;
 
   const state = room.state;
   const isHost = state.players.find((player) => player.id === room.playerId)?.isHost ?? false;
@@ -107,7 +117,7 @@ export function Room() {
       return (
         <section className="flex flex-col gap-5">
           <div className="pokedex-card p-6 text-center">
-            <h1 className="text-3xl font-extrabold tracking-tight">Classement final</h1>
+            <h1 className="text-3xl font-extrabold tracking-tight">{t.finalRankings}</h1>
           </div>
           <Scoreboard
             standings={room.final.standings}
@@ -116,14 +126,14 @@ export function Room() {
           {isHost && (
             <div className="flex flex-col gap-2.5 sm:flex-row mt-2">
               <Button onClick={() => room.actions.playAgain(true)} className="flex-1">
-                Rejouer les mêmes numéros
+                {lang === "en" ? "Replay same numbers" : "Rejouer les mêmes numéros"}
               </Button>
               <Button
                 variant="ghost"
                 onClick={() => room.actions.playAgain(false)}
                 className="flex-1"
               >
-                Nouvelle partie
+                {lang === "en" ? "New game" : "Nouvelle partie"}
               </Button>
             </div>
           )}
@@ -164,14 +174,22 @@ export function Room() {
         <section className="flex flex-col gap-4">
           <header className="pokedex-card flex items-center justify-between px-4 py-3">
             <p className="mono text-sm font-semibold text-[var(--text-dim)]">
-              Manche {room.round.roundIndex + 1} / {room.round.roundCount}
+              {t.roundIndicator(room.round.roundIndex + 1, room.round.roundCount)}
             </p>
             <ul className="flex gap-1.5 items-center">
               {state.players.map((player) => (
                 <li
                   key={player.id}
                   title={player.nickname}
-                  aria-label={`${player.nickname} ${player.hasAnswered ? "a répondu" : "réfléchit"}`}
+                  aria-label={`${player.nickname} ${
+                    player.hasAnswered
+                      ? lang === "en"
+                        ? "answered"
+                        : "a répondu"
+                      : lang === "en"
+                        ? "thinking"
+                        : "réfléchit"
+                  }`}
                   className="h-3 w-3 rounded-full transition-all"
                   style={{
                     background: player.hasAnswered ? "var(--success)" : "var(--border)",
@@ -194,14 +212,14 @@ export function Room() {
             // invitait à resaisir pour ne récolter qu'un « Tu as déjà répondu ».
             <div className="pokedex-card p-6 flex flex-col items-center gap-3">
               <p className="text-lg">
-                Votre réponse :{" "}
-                <strong className="text-[var(--accent)] font-bold">{answered.nameFr}</strong>
+                {lang === "en" ? "Your answer: " : "Votre réponse : "}
+                <strong className="text-[var(--accent)] font-bold">{pokemonName(answered)}</strong>
               </p>
               <div className="drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]">
                 <PokemonSprite pokemon={answered} size={96} />
               </div>
               <p className="text-xs uppercase font-medium text-[var(--text-dim)] animate-pulse">
-                En attente des autres joueurs…
+                {lang === "en" ? "Waiting for other players…" : "En attente des autres joueurs…"}
               </p>
             </div>
           ) : hasAnswered ? (
@@ -209,7 +227,11 @@ export function Room() {
             // reconnexion en pleine manche, `answeredPokemonId` ne survivant pas au
             // rechargement. Mieux vaut le dire que de rouvrir un champ qui sera refusé.
             <div className="pokedex-card p-6 text-center text-[var(--text-dim)]">
-              <p>Vous avez déjà répondu pour cette manche.</p>
+              <p>
+                {lang === "en"
+                  ? "You have already answered for this round."
+                  : "Vous avez déjà répondu pour cette manche."}
+              </p>
             </div>
           ) : (
             <PokemonCombobox pool={pool} onSubmit={(pokemon) => room.actions.answer(pokemon.id)} />
@@ -222,7 +244,7 @@ export function Room() {
       return (
         <div className="pokedex-card p-12 text-center">
           <p className="mono text-center text-5xl sm:text-6xl font-black text-[var(--accent)] glow-yellow animate-pulse">
-            Ça commence…
+            {lang === "en" ? "Starting now…" : "Ça commence…"}
           </p>
         </div>
       );
@@ -234,7 +256,11 @@ export function Room() {
       // exemple juste après une reconnexion, avant que l'événement de phase associé ne soit
       // traité. Ne jamais retomber sur l'écran du lobby dans ce cas : il exposerait un
       // bouton "Démarrer" actionnable en pleine partie.
-      return <p className="mono text-center text-6xl">Reconnexion…</p>;
+      return (
+        <p className="mono text-center text-6xl">
+          {lang === "en" ? "Reconnecting…" : "Reconnexion…"}
+        </p>
+      );
     }
 
     // Ce que l'hôte voit : sa dernière intention si elle n'est pas encore confirmée,
@@ -265,9 +291,19 @@ export function Room() {
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row">
-          <CopyButton value={roomUrl} label="Copier le lien" className="flex-1" />
+          <CopyButton
+            value={roomUrl}
+            label={lang === "en" ? "Copy link" : "Copier le lien"}
+            className="flex-1"
+          />
           <Button variant="ghost" onClick={() => setQrOpen((open) => !open)} className="flex-1">
-            {qrOpen ? "Masquer le QR code" : "Afficher le QR code"}
+            {qrOpen
+              ? lang === "en"
+                ? "Hide QR code"
+                : "Masquer le QR code"
+              : lang === "en"
+                ? "Show QR code"
+                : "Afficher le QR code"}
           </Button>
         </div>
         {/* Replié par défaut : le lobby porte déjà beaucoup de commandes. Le QR sert
@@ -276,13 +312,15 @@ export function Room() {
         {qrOpen && (
           <div className="pokedex-card p-6 flex flex-col items-center gap-2">
             <QrCode value={roomUrl} />
-            <p className="text-sm text-[var(--text-dim)]">À scanner pour rejoindre cette room.</p>
+            <p className="text-sm text-[var(--text-dim)]">
+              {lang === "en" ? "Scan to join this room." : "À scanner pour rejoindre cette room."}
+            </p>
           </div>
         )}
 
         <div className="pokedex-card p-4 flex flex-col gap-2">
           <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]">
-            Joueurs connectés
+            {lang === "en" ? "Connected Players" : "Joueurs connectés"}
           </span>
           <ul className="flex flex-col gap-2">
             {state.players.map((player) => (
@@ -301,7 +339,7 @@ export function Room() {
                     className="text-xs font-bold text-[var(--accent)] flex items-center gap-1"
                     aria-label="hôte"
                   >
-                    👑 Hôte
+                    👑 {lang === "en" ? "Host" : "Hôte"}
                   </span>
                 )}
               </li>
@@ -312,8 +350,12 @@ export function Room() {
         {state.replayMode !== null && (
           <p className="text-sm text-[var(--text-dim)]">
             {state.replayMode === "same"
-              ? "Prochaine partie : mêmes numéros que la précédente."
-              : "Prochaine partie : nouvelle série de numéros."}
+              ? lang === "en"
+                ? "Next game: same numbers as previous."
+                : "Prochaine partie : mêmes numéros que la précédente."
+              : lang === "en"
+                ? "Next game: new number series."
+                : "Prochaine partie : nouvelle série de numéros."}
           </p>
         )}
         {isHost ? (
@@ -345,11 +387,18 @@ export function Room() {
           // mode non choisi l'induirait en erreur — il lisait « 15 s · 10 manches » alors
           // que la room était en contre-la-montre.
           <p className="text-[var(--text-dim)]">
-            {state.gameMode === "blitz" ? "Contre la montre" : "Trouver le numéro"} · Générations :{" "}
+            {state.gameMode === "blitz"
+              ? lang === "en"
+                ? "Time Attack"
+                : "Contre la montre"
+              : lang === "en"
+                ? "Find the Number"
+                : "Trouver le numéro"}{" "}
+            · {lang === "en" ? "Generations: " : "Générations : "}
             {state.settings.generations.join(", ")} ·{" "}
             {state.gameMode === "blitz"
               ? formatBlitzDuration(state.blitzSettings.durationMs)
-              : `${state.settings.roundDurationMs / 1000} s · ${state.settings.roundCount} manches`}
+              : `${state.settings.roundDurationMs / 1000} s · ${state.settings.roundCount} ${lang === "en" ? "rounds" : "manches"}`}
           </p>
         )}
         {/* Le Pokédex n'est proposé QUE dans le lobby : la liste associe chaque numéro à
@@ -357,7 +406,13 @@ export function Room() {
             réponse à côté de la question. Replié par défaut pour ne pas noyer le lobby, et
             rendu sur place plutôt que via un lien vers /pokedex, qui ferait quitter la room. */}
         <Button variant="ghost" onClick={() => setPokedexOpen((open) => !open)}>
-          {pokedexOpen ? "Masquer le Pokédex" : "Consulter le Pokédex"}
+          {pokedexOpen
+            ? lang === "en"
+              ? "Hide Pokédex"
+              : "Masquer le Pokédex"
+            : lang === "en"
+              ? "Browse Pokédex"
+              : "Consulter le Pokédex"}
         </Button>
         {pokedexOpen && <PokedexBrowser initialGenerations={shownSettings.generations} />}
 
@@ -368,11 +423,13 @@ export function Room() {
               onClick={room.actions.start}
               className="py-3.5 text-base mt-2"
             >
-              Démarrer
+              {lang === "en" ? "Start" : "Démarrer"}
             </Button>
             {state.players.filter((player) => player.connected).length < 2 && (
               <p className="text-sm text-[var(--text-dim)]">
-                Il faut au moins 2 joueurs connectés.
+                {lang === "en"
+                  ? "At least 2 connected players are required."
+                  : "Il faut au moins 2 joueurs connectés."}
               </p>
             )}
           </>
@@ -385,7 +442,7 @@ export function Room() {
     <div className="flex flex-col gap-4">
       {room.reconnecting && (
         <p role="status" className="mono text-sm text-[var(--text-dim)]">
-          Reconnexion…
+          {lang === "en" ? "Reconnecting…" : "Reconnexion…"}
         </p>
       )}
       {room.actionError && (

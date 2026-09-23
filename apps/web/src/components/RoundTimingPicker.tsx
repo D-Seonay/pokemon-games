@@ -6,6 +6,7 @@ import {
 } from "@pkfind/shared";
 import { useId } from "react";
 import { formatRoundDuration } from "../format.js";
+import { useI18n } from "../i18n/I18nContext.js";
 
 /**
  * Le temps par manche et le nombre de manches, partagés par la configuration solo et le
@@ -24,8 +25,7 @@ export function RoundTimingPicker({
   onDurationChange: (value: RoundDurationMs) => void;
   onCountChange: (value: RoundCount) => void;
 }) {
-  // Deux instances ne coexistent sur aucun écran aujourd'hui, mais des noms de groupe
-  // fixes les feraient fusionner en un seul jeu de boutons radio si cela changeait.
+  const { lang } = useI18n();
   const durationGroup = useId();
   const countGroup = useId();
 
@@ -33,11 +33,12 @@ export function RoundTimingPicker({
     <>
       <fieldset className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm">
         <legend className="px-2 text-xs font-bold uppercase tracking-wider text-[var(--text-dim)]">
-          Temps par manche
+          {lang === "en" ? "Time per round" : "Temps par manche"}
         </legend>
         <div className="grid grid-cols-3 gap-2">
           {ROUND_DURATIONS.map((duration) => {
             const checked = durationMs === duration;
+            const durationLabel = formatRoundDuration(duration);
             return (
               <label
                 key={duration}
@@ -50,12 +51,12 @@ export function RoundTimingPicker({
                 <input
                   type="radio"
                   name={durationGroup}
-                  aria-label={formatRoundDuration(duration)}
+                  aria-label={durationLabel}
                   checked={checked}
                   onChange={() => onDurationChange(duration)}
                   className="accent-[var(--accent)] h-4 w-4 cursor-pointer"
                 />
-                <span className="mono text-sm">{formatRoundDuration(duration)}</span>
+                <span className="mono text-sm">{durationLabel}</span>
               </label>
             );
           })}
@@ -64,11 +65,12 @@ export function RoundTimingPicker({
 
       <fieldset className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm">
         <legend className="px-2 text-xs font-bold uppercase tracking-wider text-[var(--text-dim)]">
-          Nombre de manches
+          {lang === "en" ? "Number of rounds" : "Nombre de manches"}
         </legend>
         <div className="grid grid-cols-3 gap-2">
           {ROUND_COUNTS.map((count) => {
             const checked = roundCount === count;
+            const countLabel = lang === "en" ? `${count} rounds` : `${count} manches`;
             return (
               <label
                 key={count}
@@ -81,12 +83,12 @@ export function RoundTimingPicker({
                 <input
                   type="radio"
                   name={countGroup}
-                  aria-label={`${count} manches`}
+                  aria-label={countLabel}
                   checked={checked}
                   onChange={() => onCountChange(count)}
                   className="accent-[var(--accent)] h-4 w-4 cursor-pointer"
                 />
-                <span className="mono text-sm">{count} manches</span>
+                <span className="mono text-sm">{countLabel}</span>
               </label>
             );
           })}

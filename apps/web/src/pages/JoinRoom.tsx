@@ -3,9 +3,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BackLink } from "../components/BackLink.js";
 import { Button } from "../components/Button.js";
+import { useI18n } from "../i18n/I18nContext.js";
 import { KEYS, readJson, writeJson } from "../storage/local.js";
 
 export function JoinRoom() {
+  const { lang, t } = useI18n();
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   // Un caractère écarté qui disparaît sans un mot laisse le joueur croire que son clavier
@@ -17,19 +19,19 @@ export function JoinRoom() {
   return (
     <section className="flex flex-col gap-5">
       <BackLink />
-      <h1 className="text-3xl font-extrabold tracking-tight">Rejoindre une room</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">{t.joinTitle}</h1>
 
       <div className="pokedex-card p-6 flex flex-col gap-4">
         <label className="flex flex-col gap-2">
           <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]">
-            Code de la room
+            {t.roomCodeLabel}
           </span>
           <input
             value={code}
             // Pas de `maxLength` : il tronquerait la saisie BRUTE avant nettoyage, et un
             // code collé avec des espaces (« ␣␣ab23␣␣ ») perdrait ses derniers caractères.
             // La longueur est imposée par `sanitizeRoomCodeInput`, à un seul endroit.
-            aria-label="Code de la room"
+            aria-label={t.roomCodeLabel}
             placeholder="ABCD"
             onChange={(event) => {
               const raw = event.target.value;
@@ -47,13 +49,13 @@ export function JoinRoom() {
 
         <label className="flex flex-col gap-2">
           <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]">
-            Ton pseudo
+            {t.nicknameLabel}
           </span>
           <input
             value={nickname}
             maxLength={16}
-            aria-label="Ton pseudo"
-            placeholder="Sacha"
+            aria-label={t.nicknameLabel}
+            placeholder={t.nicknamePlaceholder}
             onChange={(event) => setNickname(event.target.value)}
             className="h-12 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-2)] px-4 font-semibold text-[var(--text)] outline-none focus:border-[var(--accent-2)] transition-all"
           />
@@ -65,8 +67,9 @@ export function JoinRoom() {
             className="text-xs font-medium rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--warn)_10%,transparent)] border border-[var(--warn)]/40 p-2.5"
             style={{ color: "var(--warn)" }}
           >
-            Les codes ne contiennent ni I, ni O, ni 0, ni 1 — pour éviter les confusions quand on se
-            les dicte.
+            {lang === "en"
+              ? "Codes do not contain I, O, 0, or 1 to avoid confusion when dictating."
+              : "Les codes ne contiennent ni I, ni O, ni 0, ni 1 — pour éviter les confusions quand on se les dicte."}
           </p>
         )}
 
@@ -78,7 +81,7 @@ export function JoinRoom() {
           }}
           className="py-3.5 text-base mt-2"
         >
-          Rejoindre
+          {t.joinAction}
         </Button>
       </div>
     </section>

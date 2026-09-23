@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Link, Route, Routes, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "./components/ErrorBoundary.js";
+import { I18nProvider, useI18n } from "./i18n/I18nContext.js";
 import { BlitzGame } from "./pages/BlitzGame.js";
 import { BlitzSetup } from "./pages/BlitzSetup.js";
 import { Daily } from "./pages/Daily.js";
@@ -8,12 +9,20 @@ import { Home } from "./pages/Home.js";
 import { JoinRoom } from "./pages/JoinRoom.js";
 import { Pokedex } from "./pages/Pokedex.js";
 import { PokedexEntry } from "./pages/PokedexEntry.js";
-import { Stats } from "./pages/Stats.js";
 import { Room } from "./pages/Room.js";
 import { SoloGame } from "./pages/SoloGame.js";
 import { SoloSetup } from "./pages/SoloSetup.js";
+import { Stats } from "./pages/Stats.js";
 
 export function App() {
+  return (
+    <I18nProvider>
+      <AppShell />
+    </I18nProvider>
+  );
+}
+
+function AppShell() {
   const location = useLocation();
   const mainRef = useRef<HTMLElement>(null);
 
@@ -90,20 +99,20 @@ export function App() {
 }
 
 function ErrorFallback() {
+  const { t } = useI18n();
+
   return (
     <section role="alert" className="pokedex-card p-8 flex flex-col items-center gap-4 text-center">
       <span className="text-4xl" aria-hidden="true">
         ⚠️
       </span>
-      <h1 className="text-3xl font-extrabold tracking-tight">Un problème est survenu</h1>
-      <p className="text-[var(--text-dim)] max-w-sm">
-        Cette page n'a pas pu s'afficher correctement. Vous pouvez repartir de l'accueil.
-      </p>
+      <h1 className="text-3xl font-extrabold tracking-tight">{t.errorBoundaryTitle}</h1>
+      <p className="text-[var(--text-dim)] max-w-sm">{t.errorBoundaryDesc}</p>
       <Link
         to="/"
         className="rounded-[var(--radius-sm)] bg-[var(--accent)] px-4 py-2 font-bold text-[#0a0c12] hover:bg-[#ffd833] transition-colors"
       >
-        Retour à l'accueil
+        {t.errorBoundaryReturn}
       </Link>
     </section>
   );

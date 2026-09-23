@@ -2,6 +2,8 @@ import type { GameMode } from "@pkfind/shared";
 import { useId, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button.js";
+import { LanguageSwitch } from "../components/LanguageSwitch.js";
+import { useI18n } from "../i18n/I18nContext.js";
 import { KEYS, readJson, writeJson } from "../storage/local.js";
 
 /**
@@ -21,6 +23,8 @@ function GameCard({
   mode,
   extra,
   go,
+  soloLabel,
+  multiLabel,
 }: {
   title: string;
   description: string;
@@ -31,6 +35,8 @@ function GameCard({
   mode: GameMode;
   extra?: { label: string; path: string };
   go: (path: string, state?: { mode: GameMode }) => void;
+  soloLabel: string;
+  multiLabel: string;
 }) {
   return (
     <section className="pokedex-card flex flex-col gap-4 p-5 sm:p-6 relative overflow-hidden group">
@@ -66,7 +72,7 @@ function GameCard({
           <span aria-hidden="true" className="text-xs">
             ▶
           </span>
-          Solo
+          {soloLabel}
         </Button>
         {/* Le mode voyage avec la navigation : la room s'ouvre déjà réglée sur ce jeu,
             au lieu de laisser l'hôte le choisir une seconde fois dans le lobby. */}
@@ -78,7 +84,7 @@ function GameCard({
           <span aria-hidden="true" className="text-xs opacity-75">
             👥
           </span>
-          Multijoueur
+          {multiLabel}
         </Button>
         {extra && (
           <Button
@@ -98,6 +104,7 @@ function GameCard({
 }
 
 export function Home() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [nickname, setNickname] = useState(() => readJson(KEYS.nickname, ""));
   const nicknameInputId = useId();
@@ -111,29 +118,32 @@ export function Home() {
     <section className="flex flex-col gap-6">
       {/* Brand Header */}
       <header className="flex flex-col gap-2 pt-2">
-        <div className="flex items-center gap-3">
-          {/* Stylized Pokéball Logo */}
-          <div
-            aria-hidden="true"
-            className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-[var(--border)] bg-[var(--surface-2)] shadow-[0_0_15px_rgba(255,203,5,0.2)] shrink-0 select-none relative overflow-hidden"
-          >
-            <div className="absolute top-0 inset-x-0 h-1/2 bg-[var(--accent-red)] opacity-90" />
-            <div className="absolute bottom-0 inset-x-0 h-1/2 bg-[var(--surface-elevated)]" />
-            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 bg-[#0a0c12]" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-[#0a0c12] flex items-center justify-center border border-[var(--border)]">
-              <div className="h-2 w-2 rounded-full bg-white shadow-[0_0_4px_white]" />
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            {/* Stylized Pokéball Logo */}
+            <div
+              aria-hidden="true"
+              className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-[var(--border)] bg-[var(--surface-2)] shadow-[0_0_15px_rgba(255,203,5,0.2)] shrink-0 select-none relative overflow-hidden"
+            >
+              <div className="absolute top-0 inset-x-0 h-1/2 bg-[var(--accent-red)] opacity-90" />
+              <div className="absolute bottom-0 inset-x-0 h-1/2 bg-[var(--surface-elevated)]" />
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 bg-[#0a0c12]" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-[#0a0c12] flex items-center justify-center border border-[var(--border)]">
+                <div className="h-2 w-2 rounded-full bg-white shadow-[0_0_4px_white]" />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--text)] via-[var(--accent)] to-[var(--text)] bg-clip-text text-transparent">
+                {t.appTitle}
+              </h1>
             </div>
           </div>
-          <div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--text)] via-[var(--accent)] to-[var(--text)] bg-clip-text text-transparent">
-              Pokémon Find
-            </h1>
-          </div>
+          <LanguageSwitch />
         </div>
         <p className="text-[var(--text-dim)] flex items-center gap-2 text-sm sm:text-base">
-          <span>Deux jeux de mémoire Pokédex, seul ou entre amis.</span>
+          <span>{t.tagline}</span>
           <span className="hidden sm:inline-block text-xs font-mono rounded-full px-2 py-0.5 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--accent)]">
-            Gén 1 à 9
+            {t.generationsTag}
           </span>
         </p>
       </header>
@@ -145,12 +155,12 @@ export function Home() {
             htmlFor={nicknameInputId}
             className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]"
           >
-            Ton pseudo
+            {t.nicknameLabel}
           </label>
           {nickname.trim().length > 0 && (
             <span className="text-xs text-[var(--success)] flex items-center gap-1 font-medium">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--success)] shadow-[0_0_6px_var(--success)]" />
-              Prêt à jouer
+              {t.readyToPlay}
             </span>
           )}
         </div>
@@ -159,7 +169,7 @@ export function Home() {
           value={nickname}
           onChange={(event) => setNickname(event.target.value)}
           maxLength={16}
-          placeholder="Sacha"
+          placeholder={t.nicknamePlaceholder}
           className="h-12 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-2)] px-4 text-[var(--text)] font-semibold placeholder:text-[var(--text-dim)]/50 focus:border-[var(--accent-2)] focus:shadow-[0_0_15px_rgba(61,123,255,0.25)] transition-all outline-none"
         />
       </div>
@@ -167,26 +177,30 @@ export function Home() {
       {/* Game Modes */}
       <div className="flex flex-col gap-4">
         <GameCard
-          title="Trouver le numéro"
-          description="Un numéro du Pokédex s'affiche. Nomme le Pokémon, ou approche-toi le plus possible."
-          badge="Précision & Déduction"
+          title={t.classicTitle}
+          description={t.classicDesc}
+          badge={t.classicBadge}
           badgeColor="var(--accent)"
           icon="🎯"
           soloPath="/solo"
           mode="classic"
-          extra={{ label: "Défi du jour", path: "/daily" }}
+          extra={{ label: t.dailyChallenge, path: "/daily" }}
           go={go}
+          soloLabel={t.solo}
+          multiLabel={t.multiplayer}
         />
 
         <GameCard
-          title="Contre la montre"
-          description="Nomme le plus de Pokémon possible avant la fin du temps."
-          badge="Sprint Chronométré"
+          title={t.blitzTitle}
+          description={t.blitzDesc}
+          badge={t.blitzBadge}
           badgeColor="var(--accent-2)"
           icon="⚡"
           soloPath="/blitz"
           mode="blitz"
           go={go}
+          soloLabel={t.solo}
+          multiLabel={t.multiplayer}
         />
       </div>
 
@@ -200,7 +214,7 @@ export function Home() {
           <span aria-hidden="true" className="text-sm">
             🔑
           </span>
-          Rejoindre une room
+          {t.joinRoom}
         </Button>
         <Button
           variant="ghost"
@@ -210,7 +224,7 @@ export function Home() {
           <span aria-hidden="true" className="text-sm">
             📖
           </span>
-          Pokédex
+          {t.pokedex}
         </Button>
         <Button
           variant="ghost"
@@ -220,7 +234,7 @@ export function Home() {
           <span aria-hidden="true" className="text-sm">
             📊
           </span>
-          Statistiques
+          {t.stats}
         </Button>
       </div>
     </section>

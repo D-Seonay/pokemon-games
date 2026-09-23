@@ -8,13 +8,14 @@ import {
   tierOf,
 } from "@pkfind/shared";
 import { useEffect, useState } from "react";
+import { BackLink } from "../components/BackLink.js";
+import { CopyButton } from "../components/CopyButton.js";
 import { PokemonCombobox } from "../components/PokemonCombobox.js";
 import { RoundResult } from "../components/RoundResult.js";
 import { TargetNumber } from "../components/TargetNumber.js";
-import { BackLink } from "../components/BackLink.js";
-import { CopyButton } from "../components/CopyButton.js";
 import { Timer } from "../components/Timer.js";
 import { useSoloGame } from "../game/useSoloGame.js";
+import { useI18n } from "../i18n/I18nContext.js";
 import { type DailyEntry, currentStreak, readHistory, recordDaily } from "../storage/daily.js";
 import { KEYS, readJson, writeJson } from "../storage/local.js";
 
@@ -42,6 +43,7 @@ function DailyBoard({
   now: Date;
   onFinish: (entry: DailyEntry) => void;
 }) {
+  const { lang, t } = useI18n();
   const game = useSoloGame(DAILY_SETTINGS, dailySeed(now));
 
   useEffect(() => {
@@ -63,13 +65,16 @@ function DailyBoard({
   return (
     <section className="flex flex-col gap-4">
       <header className="pokedex-card flex items-center justify-between px-4 py-3">
-        <h1 className="text-xl font-extrabold tracking-tight">Défi du jour — {today}</h1>
+        <h1 className="text-xl font-extrabold tracking-tight">
+          {lang === "en" ? `Daily Challenge — ${today}` : `Défi du jour — ${today}`}
+        </h1>
         <p className="mono font-bold text-base text-[var(--accent)] glow-yellow">
-          {game.totalScore} pts
+          {game.totalScore} {t.pts}
         </p>
       </header>
       <p className="mono text-sm text-[var(--text-dim)]">
-        Manche {game.roundIndex + 1} / {game.roundCount} · Pokédex national
+        {t.roundIndicator(game.roundIndex + 1, game.roundCount)} ·{" "}
+        {lang === "en" ? "National Pokédex" : "Pokédex national"}
       </p>
       {game.phase === "round" ? (
         <>
@@ -84,10 +89,11 @@ function DailyBoard({
   );
 }
 
-function DailyResult({ entry, today }: { entry: DailyEntry; today: string }) {
+function DailyResult({ entry }: { entry: DailyEntry; today: string }) {
+  const { lang } = useI18n();
   // Lu une seule fois : l'historique ne bouge plus une fois la partie du jour terminée.
   const [history] = useState(readHistory);
-  const streak = currentStreak(history, today);
+  const streak = currentStreak(history, entry.date);
   const emojis = entry.points.map((points) => TIER_EMOJI[tierOf(points)]).join("");
   const max = entry.points.length * MAX_SCORE;
 
@@ -105,15 +111,24 @@ function DailyResult({ entry, today }: { entry: DailyEntry; today: string }) {
     <section className="flex flex-col gap-4 text-center">
       <BackLink />
       <div className="pokedex-card p-6 flex flex-col items-center gap-3">
-        <h1 className="text-2xl font-extrabold tracking-tight">Défi du jour — {entry.date}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight">
+          {lang === "en" ? `Daily Challenge — ${entry.date}` : `Défi du jour — ${entry.date}`}
+        </h1>
         <p className="mono text-5xl font-black glow-yellow" style={{ color: "var(--accent)" }}>
-          {entry.total.toLocaleString("fr-FR")} / {max.toLocaleString("fr-FR")}
+          {entry.total.toLocaleString(lang === "en" ? "en-US" : "fr-FR")} /{" "}
+          {max.toLocaleString(lang === "en" ? "en-US" : "fr-FR")}
         </p>
         <p className="text-3xl tracking-widest">{emojis}</p>
         {streak > 0 && (
           <p className="text-[var(--text-dim)] text-sm">
             <span className="mono font-bold text-[var(--accent)]">{streak}</span>{" "}
-            {streak === 1 ? "jour d'affilée" : "jours d'affilée"}
+            {lang === "en"
+              ? streak === 1
+                ? "day streak"
+                : "days streak"
+              : streak === 1
+                ? "jour d'affilée"
+                : "jours d'affilée"}
           </p>
         )}
       </div>
@@ -121,13 +136,16 @@ function DailyResult({ entry, today }: { entry: DailyEntry; today: string }) {
       {history.length > 1 && (
         <div className="pokedex-card p-4 flex flex-col items-center gap-2">
           <p className="text-xs uppercase font-semibold text-[var(--text-dim)]">
-            Historique récent
+            {lang === "en" ? "Recent History" : "Historique récent"}
           </p>
-          <ul className="flex flex-wrap justify-center gap-1.5" aria-label="Trente derniers jours">
+          <ul
+            className="flex flex-wrap justify-center gap-1.5"
+            aria-label={lang === "en" ? "Last thirty days" : "Trente derniers jours"}
+          >
             {history.map((day) => (
               <li
                 key={day.date}
-                title={`${day.date} — ${day.total.toLocaleString("fr-FR")}`}
+                title={`${day.date} — ${day.total.toLocaleString(lang === "en" ? "en-US" : "fr-FR")}`}
                 className="text-lg leading-none p-1 rounded hover:bg-[var(--surface-2)] transition-colors"
               >
                 {TIER_EMOJI[tierOf(Math.round(day.total / Math.max(1, day.points.length)))]}
@@ -136,8 +154,12 @@ function DailyResult({ entry, today }: { entry: DailyEntry; today: string }) {
           </ul>
         </div>
       )}
-      <CopyButton value={summary} label="Partager le résultat" />
-      <p className="text-sm text-[var(--text-dim)]">Reviens demain pour un nouveau défi.</p>
+      <CopyButton value={summary} label={lang === "en" ? "Share result" : "Partager le résultat"} />
+      <p className="text-sm text-[var(--text-dim)]">
+        {lang === "en"
+          ? "Come back tomorrow for a new challenge."
+          : "Reviens demain pour un nouveau défi."}
+      </p>
     </section>
   );
 }

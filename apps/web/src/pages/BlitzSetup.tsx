@@ -10,12 +10,14 @@ import { useNavigate } from "react-router-dom";
 import { BackLink } from "../components/BackLink.js";
 import { Button } from "../components/Button.js";
 import { GenerationPicker } from "../components/GenerationPicker.js";
+import { useI18n } from "../i18n/I18nContext.js";
 
 export function formatBlitzDuration(ms: number): string {
   return ms === 60_000 ? "1 min" : `${ms / 60_000} min`;
 }
 
 export function BlitzSetup() {
+  const { lang, t } = useI18n();
   const navigate = useNavigate();
   const [settings, setSettings] = useState<BlitzSettings>(DEFAULT_BLITZ_SETTINGS);
   const durationGroup = useId();
@@ -26,10 +28,11 @@ export function BlitzSetup() {
     <section className="flex flex-col gap-6">
       <BackLink />
       <header className="flex flex-col gap-1">
-        <h1 className="text-3xl font-extrabold tracking-tight">Contre la montre</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">{t.blitzSetupTitle}</h1>
         <p className="text-sm text-[var(--text-dim)]">
-          Nommez le plus de Pokémon possible avant la fin du temps. Les noms français et anglais
-          sont acceptés, et se valident tout seuls dès qu'ils sont complets.
+          {lang === "en"
+            ? "Name as many Pokémon as you can before time expires. French and English names are accepted and submit automatically."
+            : "Nommez le plus de Pokémon possible avant la fin du temps. Les noms français et anglais sont acceptés, et se valident tout seuls dès qu'ils sont complets."}
         </p>
       </header>
 
@@ -40,7 +43,7 @@ export function BlitzSetup() {
 
       <fieldset className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm">
         <legend className="px-2 text-xs font-bold uppercase tracking-wider text-[var(--text-dim)]">
-          Durée de la session
+          {lang === "en" ? "Session duration" : "Durée de la session"}
         </legend>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {BLITZ_DURATIONS.map((duration) => {
@@ -70,9 +73,13 @@ export function BlitzSetup() {
       </fieldset>
 
       <div className="pokedex-card p-4 flex items-center justify-between">
-        <span className="text-xs uppercase font-semibold text-[var(--text-dim)]">Objectif</span>
+        <span className="text-xs uppercase font-semibold text-[var(--text-dim)]">
+          {lang === "en" ? "Target" : "Objectif"}
+        </span>
         <p className="mono text-sm font-bold text-[var(--accent-2)]">
-          {pool.ids.length} Pokémon à retrouver en {formatBlitzDuration(settings.durationMs)}.
+          {lang === "en"
+            ? `${pool.ids.length} Pokémon to find in ${formatBlitzDuration(settings.durationMs)}.`
+            : `${pool.ids.length} Pokémon à retrouver en ${formatBlitzDuration(settings.durationMs)}.`}
         </p>
       </div>
 
@@ -81,7 +88,7 @@ export function BlitzSetup() {
         onClick={() => navigate("/blitz/play", { state: settings })}
         className="py-3.5 text-base"
       >
-        Lancer
+        {lang === "en" ? "Start" : "Lancer"}
       </Button>
     </section>
   );

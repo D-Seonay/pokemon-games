@@ -2,16 +2,26 @@ import { type Pokemon, tryPokemonById } from "@pkfind/shared";
 import { useState } from "react";
 import { PokemonSprite } from "../components/PokemonSprite.js";
 import { formatPokedexNumber } from "../format.js";
+import { useI18n } from "../i18n/I18nContext.js";
 import type { PokemonDetail } from "./details.js";
 import { auraOfType, colorOfType, gradientOfType, labelOfType, primaryType } from "./types.js";
 
-const STAT_ROWS: readonly [keyof PokemonDetail["stats"], string][] = [
+const STAT_ROWS_FR: readonly [keyof PokemonDetail["stats"], string][] = [
   ["hp", "PV"],
   ["atk", "Attaque"],
   ["def", "Défense"],
   ["spa", "Atq. Spé."],
   ["spd", "Déf. Spé."],
   ["spe", "Vitesse"],
+];
+
+const STAT_ROWS_EN: readonly [keyof PokemonDetail["stats"], string][] = [
+  ["hp", "HP"],
+  ["atk", "Attack"],
+  ["def", "Defense"],
+  ["spa", "Sp. Atk"],
+  ["spd", "Sp. Def"],
+  ["spe", "Speed"],
 ];
 
 // Borne d'affichage des barres. 255 est le maximum théorique d'une statistique de base,
@@ -40,9 +50,14 @@ export function PokemonDetailView({
   /** Naviguer vers un autre Pokémon depuis la chaîne d'évolution. */
   onSelect?: (next: Pokemon) => void;
 }) {
+  const { lang, pokemonName } = useI18n();
   const [tab, setTab] = useState<Tab>("about");
   const Heading = headingLevel;
   const accent = primaryType(detail?.types ?? []);
+
+  const primaryName = pokemonName(pokemon);
+  const secondaryName = lang === "en" ? pokemon.nameFr : pokemon.nameEn;
+  const statRows = lang === "en" ? STAT_ROWS_EN : STAT_ROWS_FR;
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -61,26 +76,30 @@ export function PokemonDetailView({
         <p className="mono text-lg text-[var(--text-dim)]">
           {formatPokedexNumber(pokemon.id, maxId)}
         </p>
-        <Heading className="text-3xl font-extrabold">{pokemon.nameFr}</Heading>
+        <Heading className="text-3xl font-extrabold">{primaryName}</Heading>
         {/* Même règle que les cartes : répéter « Pikachu » sous « Pikachu » n'apprend
             rien et fait douter de ce qu'on lit. */}
         {pokemon.nameEn !== pokemon.nameFr && (
-          <p className="text-[var(--text-dim)]">{pokemon.nameEn}</p>
+          <p className="text-[var(--text-dim)]">{secondaryName}</p>
         )}
         {detail && (
           <p className="text-lg text-[var(--text-dim)]">
-            {detail.types.map((t) => labelOfType(t)).join(" / ")}
+            {detail.types.map((t) => labelOfType(t, lang)).join(" / ")}
           </p>
         )}
       </div>
 
       {detail ? (
         <>
-          <div role="tablist" aria-label="Sections de la fiche" className="flex gap-2">
+          <div
+            role="tablist"
+            aria-label={lang === "en" ? "Entry sections" : "Sections de la fiche"}
+            className="flex gap-2"
+          >
             {(
               [
-                ["about", "À propos"],
-                ["evolution", "Évolutions"],
+                ["about", lang === "en" ? "About" : "À propos"],
+                ["evolution", lang === "en" ? "Evolutions" : "Évolutions"],
               ] as const
             ).map(([id, label]) => (
               <button
@@ -107,15 +126,29 @@ export function PokemonDetailView({
 
               <dl className="grid grid-cols-3 gap-3 text-center">
                 <div>
-                  <dt className="text-xs text-[var(--text-dim)]">Taille</dt>
-                  <dd className="mono">{detail.heightM.toFixed(1).replace(".", ",")} m</dd>
+                  <dt className="text-xs text-[var(--text-dim)]">
+                    {lang === "en" ? "Height" : "Taille"}
+                  </dt>
+                  <dd className="mono">
+                    {lang === "en"
+                      ? `${detail.heightM.toFixed(1)} m`
+                      : `${detail.heightM.toFixed(1).replace(".", ",")} m`}
+                  </dd>
                 </div>
                 <div>
-                  <dt className="text-xs text-[var(--text-dim)]">Poids</dt>
-                  <dd className="mono">{detail.weightKg.toFixed(1).replace(".", ",")} kg</dd>
+                  <dt className="text-xs text-[var(--text-dim)]">
+                    {lang === "en" ? "Weight" : "Poids"}
+                  </dt>
+                  <dd className="mono">
+                    {lang === "en"
+                      ? `${detail.weightKg.toFixed(1)} kg`
+                      : `${detail.weightKg.toFixed(1).replace(".", ",")} kg`}
+                  </dd>
                 </div>
                 <div>
-                  <dt className="text-xs text-[var(--text-dim)]">Génération</dt>
+                  <dt className="text-xs text-[var(--text-dim)]">
+                    {lang === "en" ? "Generation" : "Génération"}
+                  </dt>
                   <dd className="mono">{pokemon.generation}</dd>
                 </div>
               </dl>
@@ -125,7 +158,7 @@ export function PokemonDetailView({
               )}
 
               <div className="flex flex-col gap-2">
-                {STAT_ROWS.map(([key, label]) => (
+                {statRows.map(([key, label]) => (
                   <div key={key} className="flex items-center gap-3">
                     <span className="w-20 shrink-0 text-sm text-[var(--text-dim)]">{label}</span>
                     <span className="mono w-9 shrink-0 text-right font-semibold">
@@ -159,7 +192,9 @@ export function PokemonDetailView({
         </>
       ) : (
         <p role="status" className="text-sm text-[var(--text-dim)]">
-          Fiche détaillée indisponible — le reste du Pokédex fonctionne quand même.
+          {lang === "en"
+            ? "Detailed entry unavailable — the rest of the Pokédex still functions."
+            : "Fiche détaillée indisponible — le reste du Pokédex fonctionne quand même."}
         </p>
       )}
     </div>
@@ -177,8 +212,14 @@ function EvolutionChain({
   maxId: number;
   onSelect?: (next: Pokemon) => void;
 }) {
+  const { lang, pokemonName } = useI18n();
+
   if (stages.length <= 1) {
-    return <p className="text-sm text-[var(--text-dim)]">Ce Pokémon n&apos;évolue pas.</p>;
+    return (
+      <p className="text-sm text-[var(--text-dim)]">
+        {lang === "en" ? "This Pokémon does not evolve." : "Ce Pokémon n'évolue pas."}
+      </p>
+    );
   }
 
   return (
@@ -195,7 +236,7 @@ function EvolutionChain({
                 <span className="mono text-xs text-[var(--text-dim)]">
                   {formatPokedexNumber(mon.id, maxId)}
                 </span>
-                <span className="text-xs">{mon.nameFr}</span>
+                <span className="text-xs">{pokemonName(mon)}</span>
               </>
             );
             // Le Pokémon affiché n'est pas cliquable : rien à aller voir, on y est déjà.
@@ -213,8 +254,10 @@ function EvolutionChain({
                 key={id}
                 type="button"
                 onClick={() => onSelect(mon)}
-                aria-label={`${mon.nameFr}, voir la fiche`}
-                className="flex w-24 flex-col items-center rounded-[var(--radius-sm)] border border-transparent p-2 text-center hover:border-[var(--border)]"
+                aria-label={
+                  lang === "en" ? `${mon.nameEn}, view details` : `${mon.nameFr}, voir la fiche`
+                }
+                className="flex w-24 flex-col items-center rounded-[var(--radius-sm)] border border-transparent p-2 text-center hover:border-[var(--border)] transition-colors cursor-pointer"
               >
                 {content}
               </button>

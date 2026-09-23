@@ -1,6 +1,9 @@
+import { useI18n } from "../i18n/I18nContext.js";
 import { colorOfType, labelOfType } from "./types.js";
 
 export function TypeBadge({ type, size = "sm" }: { type: string; size?: "sm" | "md" }) {
+  const { lang } = useI18n();
+
   return (
     <span
       className={
@@ -16,7 +19,7 @@ export function TypeBadge({ type, size = "sm" }: { type: string; size?: "sm" | "
         boxShadow: "0 2px 6px rgba(0,0,0,0.35)",
       }}
     >
-      {labelOfType(type)}
+      {labelOfType(type, lang)}
     </span>
   );
 }

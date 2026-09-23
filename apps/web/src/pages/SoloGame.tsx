@@ -1,13 +1,14 @@
 import { type GameSettings, randomSeed, validateSettings } from "@pkfind/shared";
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Button } from "../components/Button.js";
 import { GameOver } from "../components/GameOver.js";
 import { PokemonCombobox } from "../components/PokemonCombobox.js";
 import { RoundResult } from "../components/RoundResult.js";
 import { TargetNumber } from "../components/TargetNumber.js";
 import { Timer } from "../components/Timer.js";
 import { useSoloGame } from "../game/useSoloGame.js";
-import { Button } from "../components/Button.js";
+import { useI18n } from "../i18n/I18nContext.js";
 
 export function SoloGame() {
   const location = useLocation();
@@ -48,6 +49,7 @@ function SoloGameBoard({
   onReplay: () => void;
   onQuit: () => void;
 }) {
+  const { t, lang } = useI18n();
   const game = useSoloGame(settings, seed);
 
   if (game.phase === "finished") {
@@ -55,7 +57,7 @@ function SoloGameBoard({
       <div className="flex flex-col gap-3">
         <GameOver rounds={game.rounds} settings={settings} onReplay={onReplay} />
         <Button variant="ghost" onClick={onQuit} className="w-full">
-          Changer les réglages
+          {lang === "en" ? "Change settings" : "Changer les réglages"}
         </Button>
       </div>
     );
@@ -69,11 +71,11 @@ function SoloGameBoard({
         <div className="flex items-center gap-2">
           <span className="inline-block h-2 w-2 rounded-full bg-[var(--accent-2)] shadow-[0_0_6px_var(--accent-2)]" />
           <p className="mono text-sm font-semibold text-[var(--text-dim)]">
-            Manche {game.roundIndex + 1} / {game.roundCount}
+            {t.roundIndicator(game.roundIndex + 1, game.roundCount)}
           </p>
         </div>
         <p className="mono font-bold text-base text-[var(--accent)] glow-yellow">
-          {game.totalScore} pts
+          {game.totalScore} {t.pts}
         </p>
       </header>
 
