@@ -9,6 +9,25 @@
  * eux-mêmes les événements serveur→client via `triggerSocketEvent` et inspectent les
  * émissions client→serveur via `getEmittedCalls`, y compris pour répondre manuellement à
  * un accusé de réception (`ack`) comme le ferait le serveur.
+ *
+ * ---
+ * ## Divergences connues avec socket.io-client (Issue #6)
+ *
+ * 1. **Mise en file (buffering hors ligne)** :
+ *    Le vrai client Socket.IO bufferise les `emit()` effectués hors connexion (`connected === false`)
+ *    et les dépile automatiquement à la reconnexion. Ce double enregistre directement les appels
+ *    dans `emitted` quel que soit l'état de `connected`.
+ *
+ * 2. **Cycle de vie de `connected`** :
+ *    Désormais synchronisé : `triggerSocketEvent("connect")` passe `connected` à `true`, et
+ *    `triggerSocketEvent("disconnect", ...)` le repasse à `false`. `connect()` passe également
+ *    `connected` à `true`. `setSocketConnected(value)` reste disponible pour forcer un état.
+ *
+ * 3. **Asynchronisme des acks** :
+ *    En réseau réel, les acks reviennent après un aller-retour serveur. Dans les tests unitaires,
+ *    l'ack est manipulé manuellement par le testeur via `call.ack(...)`. Pour tester des scénarios
+ *    où l'ack arrive de manière asynchrone (ex: après démontage d'un composant), appeler `call.ack`
+ *    au sein d'un `setTimeout` ou après démontage du hook/composant.
  */
 import type { ClientToServerEvents, ServerToClientEvents } from "@pkfind/shared";
 import type { AppSocket } from "./socket.js";
@@ -85,6 +104,11 @@ export function triggerSocketEvent<E extends ServerEvent>(
 export function triggerSocketEvent(event: "connect", ...args: []): void;
 export function triggerSocketEvent(event: "disconnect", ...args: [string]): void;
 export function triggerSocketEvent(event: string, ...args: unknown[]): void {
+  if (event === "connect") {
+    connected = true;
+  } else if (event === "disconnect") {
+    connected = false;
+  }
   for (const handler of listeners.get(event) ?? []) handler(...args);
 }
 
