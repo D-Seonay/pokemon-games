@@ -8,7 +8,7 @@ test("deux joueurs jouent une partie complète dans la même room", async ({ bro
 
   await host.goto("/");
   await host.getByPlaceholder("Sacha").fill("Mathéo");
-  await host.getByRole("button", { name: "Créer une room" }).click();
+  await host.getByRole("button", { name: "Multijoueur" }).first().click();
   await expect(host).toHaveURL(/\/room\/[A-HJ-NP-Z2-9]{4}$/);
   const code = host.url().split("/").at(-1)!;
 
@@ -56,7 +56,7 @@ test("un joueur qui recharge la page retrouve sa place et son score", async ({ b
 
   await host.goto("/");
   await host.getByPlaceholder("Sacha").fill("Mathéo");
-  await host.getByRole("button", { name: "Créer une room" }).click();
+  await host.getByRole("button", { name: "Multijoueur" }).first().click();
   await expect(host).toHaveURL(/\/room\/[A-HJ-NP-Z2-9]{4}$/);
   const code = host.url().split("/").at(-1)!;
 

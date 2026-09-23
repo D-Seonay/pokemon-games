@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("une partie solo de 10 manches se joue jusqu'au récapitulatif", async ({ page }) => {
   await page.goto("/");
   await page.getByPlaceholder("Sacha").fill("Mathéo");
-  await page.getByRole("button", { name: "Jouer en solo" }).click();
+  await page.getByRole("button", { name: "Solo" }).first().click();
   await page.getByRole("button", { name: "Lancer" }).click();
 
   for (let round = 1; round <= 10; round++) {
