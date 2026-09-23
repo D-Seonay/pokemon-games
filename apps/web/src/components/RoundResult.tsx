@@ -55,8 +55,8 @@ export function RoundResult({
         isExact
           ? "border-[var(--success)] shadow-[0_0_30px_rgba(53,208,127,0.25)] bg-[radial-gradient(ellipse_at_top,rgba(53,208,127,0.12)_0%,var(--surface)_70%)]"
           : isGood
-          ? "border-[var(--accent)] shadow-[0_0_25px_rgba(255,203,5,0.15)] bg-[radial-gradient(ellipse_at_top,rgba(255,203,5,0.08)_0%,var(--surface)_70%)]"
-          : "border-[var(--border)]"
+            ? "border-[var(--accent)] shadow-[0_0_25px_rgba(255,203,5,0.15)] bg-[radial-gradient(ellipse_at_top,rgba(255,203,5,0.08)_0%,var(--surface)_70%)]"
+            : "border-[var(--border)]"
       }`}
     >
       <div className="relative flex items-center justify-center p-3">
@@ -88,9 +88,7 @@ export function RoundResult({
         className="mono text-5xl font-black tracking-tight"
         style={{
           color: isExact ? "var(--success)" : "var(--accent)",
-          textShadow: isExact
-            ? "0 0 25px rgba(53,208,127,0.5)"
-            : "0 0 25px rgba(255,203,5,0.4)",
+          textShadow: isExact ? "0 0 25px rgba(53,208,127,0.5)" : "0 0 25px rgba(255,203,5,0.4)",
         }}
       >
         +{round.points}

@@ -72,7 +72,9 @@ function SoloGameBoard({
             Manche {game.roundIndex + 1} / {game.roundCount}
           </p>
         </div>
-        <p className="mono font-bold text-base text-[var(--accent)] glow-yellow">{game.totalScore} pts</p>
+        <p className="mono font-bold text-base text-[var(--accent)] glow-yellow">
+          {game.totalScore} pts
+        </p>
       </header>
 
       {game.phase === "round" ? (

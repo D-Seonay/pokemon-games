@@ -72,15 +72,15 @@ export function Stats() {
           <dt className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]">
             Réponses exactes
           </dt>
-          <dd className="mono text-3xl font-bold text-[var(--success)]">
-            {stats.exactHits}
-          </dd>
+          <dd className="mono text-3xl font-bold text-[var(--success)]">{stats.exactHits}</dd>
         </div>
       </dl>
 
       {stats.weakestGeneration !== null && (
         <div className="pokedex-card p-4 flex items-center gap-3 border-[color-mix(in_srgb,var(--warn)_40%,transparent)] bg-[color-mix(in_srgb,var(--warn)_8%,transparent)]">
-          <span className="text-2xl select-none" aria-hidden="true">⚠️</span>
+          <span className="text-2xl select-none" aria-hidden="true">
+            ⚠️
+          </span>
           <p className="text-sm">
             Génération à travailler :{" "}
             <strong className="mono font-bold text-[var(--warn)]">
@@ -96,14 +96,23 @@ export function Stats() {
             <caption className="sr-only">Écart moyen par génération</caption>
             <thead className="text-[var(--text-dim)] border-b border-[var(--border)] bg-[var(--surface-2)]">
               <tr>
-                <th scope="col" className="px-4 py-3">Génération</th>
-                <th scope="col" className="px-4 py-3">Manches</th>
-                <th scope="col" className="px-4 py-3">Écart moyen</th>
+                <th scope="col" className="px-4 py-3">
+                  Génération
+                </th>
+                <th scope="col" className="px-4 py-3">
+                  Manches
+                </th>
+                <th scope="col" className="px-4 py-3">
+                  Écart moyen
+                </th>
               </tr>
             </thead>
             <tbody className="mono divide-y divide-[var(--border)]/50">
               {rows.map((row) => (
-                <tr key={row.generation} className="hover:bg-[var(--surface-2)]/50 transition-colors">
+                <tr
+                  key={row.generation}
+                  className="hover:bg-[var(--surface-2)]/50 transition-colors"
+                >
                   <th scope="row" className="font-normal px-4 py-2.5">
                     Génération {row.generation}
                   </th>

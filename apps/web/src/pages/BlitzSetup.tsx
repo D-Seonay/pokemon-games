@@ -28,8 +28,8 @@ export function BlitzSetup() {
       <header className="flex flex-col gap-1">
         <h1 className="text-3xl font-extrabold tracking-tight">Contre la montre</h1>
         <p className="text-sm text-[var(--text-dim)]">
-          Nommez le plus de Pokémon possible avant la fin du temps. Les noms français et anglais sont
-          acceptés, et se valident tout seuls dès qu'ils sont complets.
+          Nommez le plus de Pokémon possible avant la fin du temps. Les noms français et anglais
+          sont acceptés, et se valident tout seuls dès qu'ils sont complets.
         </p>
       </header>
 

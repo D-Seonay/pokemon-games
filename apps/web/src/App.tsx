@@ -92,7 +92,9 @@ export function App() {
 function ErrorFallback() {
   return (
     <section role="alert" className="pokedex-card p-8 flex flex-col items-center gap-4 text-center">
-      <span className="text-4xl" aria-hidden="true">⚠️</span>
+      <span className="text-4xl" aria-hidden="true">
+        ⚠️
+      </span>
       <h1 className="text-3xl font-extrabold tracking-tight">Un problème est survenu</h1>
       <p className="text-[var(--text-dim)] max-w-sm">
         Cette page n'a pas pu s'afficher correctement. Vous pouvez repartir de l'accueil.

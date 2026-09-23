@@ -64,7 +64,9 @@ function DailyBoard({
     <section className="flex flex-col gap-4">
       <header className="pokedex-card flex items-center justify-between px-4 py-3">
         <h1 className="text-xl font-extrabold tracking-tight">Défi du jour — {today}</h1>
-        <p className="mono font-bold text-base text-[var(--accent)] glow-yellow">{game.totalScore} pts</p>
+        <p className="mono font-bold text-base text-[var(--accent)] glow-yellow">
+          {game.totalScore} pts
+        </p>
       </header>
       <p className="mono text-sm text-[var(--text-dim)]">
         Manche {game.roundIndex + 1} / {game.roundCount} · Pokédex national
@@ -96,7 +98,7 @@ function DailyResult({ entry, today }: { entry: DailyEntry; today: string }) {
     date: new Date(`${entry.date}T12:00:00Z`),
     total: entry.total,
     points: entry.points,
-    url: `${window.location.origin}/daily` ,
+    url: `${window.location.origin}/daily`,
   });
 
   return (
@@ -118,7 +120,9 @@ function DailyResult({ entry, today }: { entry: DailyEntry; today: string }) {
 
       {history.length > 1 && (
         <div className="pokedex-card p-4 flex flex-col items-center gap-2">
-          <p className="text-xs uppercase font-semibold text-[var(--text-dim)]">Historique récent</p>
+          <p className="text-xs uppercase font-semibold text-[var(--text-dim)]">
+            Historique récent
+          </p>
           <ul className="flex flex-wrap justify-center gap-1.5" aria-label="Trente derniers jours">
             {history.map((day) => (
               <li
