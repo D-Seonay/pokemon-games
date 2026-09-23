@@ -1,6 +1,7 @@
-import type { Pokemon, PokemonDetail } from "@pkfind/shared";
+import type { Pokemon } from "@pkfind/shared";
 import { PokemonSprite } from "../components/PokemonSprite.js";
 import { formatPokedexNumber } from "../format.js";
+import type { PokemonDetail } from "./details.js";
 import { TypeBadge } from "./TypeBadge.js";
 
 export function PokedexCard({
