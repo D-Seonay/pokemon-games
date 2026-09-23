@@ -105,18 +105,20 @@ export function Room() {
   function renderBody() {
     if (room.final) {
       return (
-        <section className="flex flex-col gap-4">
-          <h1 className="text-3xl font-extrabold">Classement final</h1>
+        <section className="flex flex-col gap-5">
+          <div className="pokedex-card p-6 text-center">
+            <h1 className="text-3xl font-extrabold tracking-tight">Classement final</h1>
+          </div>
           <Scoreboard
             standings={room.final.standings}
             {...(room.playerId ? { highlightPlayerId: room.playerId } : {})}
           />
           {isHost && (
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <Button onClick={() => room.actions.playAgain(true)}>
+            <div className="flex flex-col gap-2.5 sm:flex-row mt-2">
+              <Button onClick={() => room.actions.playAgain(true)} className="flex-1">
                 Rejouer les mêmes numéros
               </Button>
-              <Button variant="ghost" onClick={() => room.actions.playAgain(false)}>
+              <Button variant="ghost" onClick={() => room.actions.playAgain(false)} className="flex-1">
                 Nouvelle partie
               </Button>
             </div>
@@ -156,19 +158,20 @@ export function Room() {
 
       return (
         <section className="flex flex-col gap-4">
-          <header className="flex items-center justify-between">
-            <p className="mono text-[var(--text-dim)]">
+          <header className="pokedex-card flex items-center justify-between px-4 py-3">
+            <p className="mono text-sm font-semibold text-[var(--text-dim)]">
               Manche {room.round.roundIndex + 1} / {room.round.roundCount}
             </p>
-            <ul className="flex gap-1">
+            <ul className="flex gap-1.5 items-center">
               {state.players.map((player) => (
                 <li
                   key={player.id}
                   title={player.nickname}
                   aria-label={`${player.nickname} ${player.hasAnswered ? "a répondu" : "réfléchit"}`}
-                  className="h-3 w-3 rounded-full"
+                  className="h-3 w-3 rounded-full transition-all"
                   style={{
                     background: player.hasAnswered ? "var(--success)" : "var(--border)",
+                    boxShadow: player.hasAnswered ? "0 0 6px var(--success)" : "none",
                     opacity: player.connected ? 1 : 0.3,
                   }}
                 />
@@ -185,20 +188,24 @@ export function Room() {
           {answered !== null ? (
             // Répondu : on rappelle le choix et on retire le champ. Le garder actif
             // invitait à resaisir pour ne récolter qu'un « Tu as déjà répondu ».
-            <div className="flex flex-col items-center gap-2">
-              <p>
-                Votre réponse : <strong>{answered.nameFr}</strong>
+            <div className="pokedex-card p-6 flex flex-col items-center gap-3">
+              <p className="text-lg">
+                Votre réponse : <strong className="text-[var(--accent)] font-bold">{answered.nameFr}</strong>
               </p>
-              <PokemonSprite pokemon={answered} size={96} />
-              <p className="text-sm text-[var(--text-dim)]">En attente des autres joueurs…</p>
+              <div className="drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]">
+                <PokemonSprite pokemon={answered} size={96} />
+              </div>
+              <p className="text-xs uppercase font-medium text-[var(--text-dim)] animate-pulse">
+                En attente des autres joueurs…
+              </p>
             </div>
           ) : hasAnswered ? (
             // Le serveur nous sait ayant répondu mais on ignore quoi : c'est le cas d'une
             // reconnexion en pleine manche, `answeredPokemonId` ne survivant pas au
             // rechargement. Mieux vaut le dire que de rouvrir un champ qui sera refusé.
-            <p className="text-center text-[var(--text-dim)]">
-              Vous avez déjà répondu pour cette manche.
-            </p>
+            <div className="pokedex-card p-6 text-center text-[var(--text-dim)]">
+              <p>Vous avez déjà répondu pour cette manche.</p>
+            </div>
           ) : (
             <PokemonCombobox pool={pool} onSubmit={(pokemon) => room.actions.answer(pokemon.id)} />
           )}
@@ -207,7 +214,13 @@ export function Room() {
     }
 
     if (state.status === "countdown") {
-      return <p className="mono text-center text-6xl">Ça commence…</p>;
+      return (
+        <div className="pokedex-card p-12 text-center">
+          <p className="mono text-center text-5xl sm:text-6xl font-black text-[var(--accent)] glow-yellow animate-pulse">
+            Ça commence…
+          </p>
+        </div>
+      );
     }
 
     if (state.status !== "lobby") {
@@ -236,13 +249,16 @@ export function Room() {
 
     return (
       <section className="flex flex-col gap-6">
-        <h1 className="text-3xl font-extrabold">Room</h1>
-        <p
-          className="mono tracking-[0.2em] sm:tracking-[0.3em]"
-          style={{ fontSize: "clamp(2.5rem, 14vw, 3.75rem)" }}
-        >
-          {state.code}
-        </p>
+        <div className="pokedex-card p-6 flex flex-col items-center justify-center gap-2 text-center">
+          <h1 className="text-3xl font-extrabold tracking-tight">Room</h1>
+          <p
+            className="mono tracking-[0.2em] sm:tracking-[0.3em] font-black text-[var(--accent)] glow-yellow"
+            style={{ fontSize: "clamp(2.5rem, 14vw, 3.75rem)" }}
+          >
+            {state.code}
+          </p>
+        </div>
+
         <div className="flex flex-col gap-2 sm:flex-row">
           <CopyButton value={roomUrl} label="Copier le lien" className="flex-1" />
           <Button variant="ghost" onClick={() => setQrOpen((open) => !open)} className="flex-1">
@@ -253,19 +269,32 @@ export function Room() {
             surtout quand les joueurs sont ensemble dans la même pièce, un cas fréquent
             ici mais pas universel — un clic pour l'obtenir suffit. */}
         {qrOpen && (
-          <div className="flex flex-col items-center gap-2">
+          <div className="pokedex-card p-6 flex flex-col items-center gap-2">
             <QrCode value={roomUrl} />
             <p className="text-sm text-[var(--text-dim)]">À scanner pour rejoindre cette room.</p>
           </div>
         )}
-        <ul className="flex flex-col gap-2">
-          {state.players.map((player) => (
-            <li key={player.id} className="flex items-center gap-2">
-              <span style={{ opacity: player.connected ? 1 : 0.4 }}>{player.nickname}</span>
-              {player.isHost && <span aria-label="hôte">👑</span>}
-            </li>
-          ))}
-        </ul>
+
+        <div className="pokedex-card p-4 flex flex-col gap-2">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]">
+            Joueurs connectés
+          </span>
+          <ul className="flex flex-col gap-2">
+            {state.players.map((player) => (
+              <li key={player.id} className="flex items-center justify-between p-2 rounded-[var(--radius-sm)] bg-[var(--surface-2)]">
+                <span className="font-semibold text-sm" style={{ opacity: player.connected ? 1 : 0.4 }}>
+                  {player.nickname}
+                </span>
+                {player.isHost && (
+                  <span className="text-xs font-bold text-[var(--accent)] flex items-center gap-1" aria-label="hôte">
+                    👑 Hôte
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+
         {state.replayMode !== null && (
           <p className="text-sm text-[var(--text-dim)]">
             {state.replayMode === "same"
@@ -323,6 +352,7 @@ export function Room() {
             <Button
               disabled={state.players.filter((player) => player.connected).length < 2}
               onClick={room.actions.start}
+              className="py-3.5 text-base mt-2"
             >
               Démarrer
             </Button>

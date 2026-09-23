@@ -1,7 +1,6 @@
-import type { Pokemon } from "@pkfind/shared";
+import type { Pokemon, PokemonDetail } from "@pkfind/shared";
 import { PokemonSprite } from "../components/PokemonSprite.js";
 import { formatPokedexNumber } from "../format.js";
-import type { PokemonDetail } from "./details.js";
 import { TypeBadge } from "./TypeBadge.js";
 
 export function PokedexCard({
@@ -21,23 +20,24 @@ export function PokedexCard({
       type="button"
       onClick={onOpen}
       aria-label={`${pokemon.nameFr}, voir la fiche`}
-      className="flex flex-col items-center gap-1 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] p-3 text-center transition-colors hover:border-[var(--accent)] focus-visible:border-[var(--accent)]"
+      className="pokedex-card group relative flex flex-col items-center gap-1.5 p-3.5 text-center cursor-pointer transition-all hover:-translate-y-1 hover:border-[var(--accent)] hover:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.6),0_0_15px_rgba(255,203,5,0.15)] focus-visible:border-[var(--accent)] active:scale-[0.98] outline-none"
     >
-      <span className="mono text-xs text-[var(--text-dim)]">
+      <span className="mono text-xs font-semibold text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors">
         {formatPokedexNumber(pokemon.id, maxId)}
       </span>
-      <PokemonSprite pokemon={pokemon} size={72} />
-      <span className="text-sm font-semibold leading-tight">{pokemon.nameFr}</span>
-      {/* Le nom anglais reste visible : le jeu accepte les réponses en anglais, et un
-          joueur peut très bien connaître « Farfetch'd » sans connaître « Canarticho ». */}
+      <div className="relative py-1 transition-transform duration-200 group-hover:scale-110 drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]">
+        <PokemonSprite pokemon={pokemon} size={72} />
+      </div>
+      <span className="text-sm font-bold leading-tight text-[var(--text)] group-hover:text-[var(--accent)] transition-colors">
+        {pokemon.nameFr}
+      </span>
       {pokemon.nameEn !== pokemon.nameFr && (
-        <span className="text-xs leading-tight text-[var(--text-dim)]">{pokemon.nameEn}</span>
+        <span className="text-xs leading-tight text-[var(--text-dim)] font-medium">
+          {pokemon.nameEn}
+        </span>
       )}
-      {/* Les pastilles n'apparaissent qu'une fois les détails chargés. La carte ne réserve
-          pas leur place : mieux vaut une grille qui se densifie qu'un trou permanent chez
-          quelqu'un dont le fichier n'a jamais abouti. */}
       {detail && (
-        <span className="flex flex-wrap justify-center gap-1">
+        <span className="flex flex-wrap justify-center gap-1 mt-1">
           {detail.types.map((type) => (
             <TypeBadge key={type} type={type} />
           ))}

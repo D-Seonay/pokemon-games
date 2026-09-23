@@ -7,6 +7,7 @@ import { RoundResult } from "../components/RoundResult.js";
 import { TargetNumber } from "../components/TargetNumber.js";
 import { Timer } from "../components/Timer.js";
 import { useSoloGame } from "../game/useSoloGame.js";
+import { Button } from "../components/Button.js";
 
 export function SoloGame() {
   const location = useLocation();
@@ -51,12 +52,12 @@ function SoloGameBoard({
 
   if (game.phase === "finished") {
     return (
-      <>
+      <div className="flex flex-col gap-3">
         <GameOver rounds={game.rounds} settings={settings} onReplay={onReplay} />
-        <button type="button" className="mt-4 underline" onClick={onQuit}>
+        <Button variant="ghost" onClick={onQuit} className="w-full">
           Changer les réglages
-        </button>
-      </>
+        </Button>
+      </div>
     );
   }
 
@@ -64,11 +65,14 @@ function SoloGameBoard({
 
   return (
     <section className="flex flex-col gap-4">
-      <header className="flex items-center justify-between">
-        <p className="mono text-[var(--text-dim)]">
-          Manche {game.roundIndex + 1} / {game.roundCount}
-        </p>
-        <p className="mono">{game.totalScore} pts</p>
+      <header className="pokedex-card flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-2">
+          <span className="inline-block h-2 w-2 rounded-full bg-[var(--accent-2)] shadow-[0_0_6px_var(--accent-2)]" />
+          <p className="mono text-sm font-semibold text-[var(--text-dim)]">
+            Manche {game.roundIndex + 1} / {game.roundCount}
+          </p>
+        </div>
+        <p className="mono font-bold text-base text-[var(--accent)] glow-yellow">{game.totalScore} pts</p>
       </header>
 
       {game.phase === "round" ? (

@@ -1,6 +1,7 @@
 import { DEFAULT_SETTINGS, type GameSettings } from "@pkfind/shared";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BackLink } from "../components/BackLink.js";
 import { Button } from "../components/Button.js";
 import { GenerationPicker } from "../components/GenerationPicker.js";
 import { RoundTimingPicker } from "../components/RoundTimingPicker.js";
@@ -11,7 +12,13 @@ export function SoloSetup() {
 
   return (
     <section className="flex flex-col gap-6">
-      <h1 className="text-3xl font-extrabold">Partie solo</h1>
+      <BackLink />
+      <header className="flex flex-col gap-1">
+        <h1 className="text-3xl font-extrabold tracking-tight">Partie solo</h1>
+        <p className="text-sm text-[var(--text-dim)]">
+          Personnalise tes générations et ton rythme de jeu.
+        </p>
+      </header>
 
       <GenerationPicker
         value={settings.generations}
@@ -28,6 +35,7 @@ export function SoloSetup() {
       <Button
         disabled={settings.generations.length === 0}
         onClick={() => navigate("/solo/play", { state: settings })}
+        className="py-3.5 text-base mt-2"
       >
         Lancer
       </Button>

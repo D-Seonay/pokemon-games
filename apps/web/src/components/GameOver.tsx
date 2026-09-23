@@ -71,75 +71,104 @@ export function GameOver({
   }, [rounds]);
 
   return (
-    <section className="flex flex-col gap-4">
-      <h1 className="text-3xl font-extrabold">Partie terminée</h1>
-      <p className="mono text-5xl" style={{ color: "var(--accent)" }}>
-        {total} / {rounds.length * MAX_SCORE}
-      </p>
-      {isRecord ? (
-        <p style={{ color: "var(--success)" }}>Nouveau record pour cette configuration.</p>
-      ) : (
-        previousBest !== null && (
-          <p className="text-[var(--text-dim)]">Votre record : {previousBest}</p>
-        )
-      )}
-      {stats.roundsPlayed > 0 && (
-        <ul className="text-sm text-[var(--text-dim)]">
-          <li>
-            Écart moyen :{" "}
-            <span className="mono">
-              {stats.averageGap?.toLocaleString("fr-FR", {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1,
-              })}
-            </span>
-          </li>
-          <li>
-            Réponses exactes : <span className="mono">{stats.exactHits}</span> /{" "}
-            {stats.roundsPlayed}
-          </li>
-          {stats.weakestGeneration !== null && (
-            <li>
-              Génération à travailler :{" "}
-              <span className="mono">Génération {stats.weakestGeneration}</span>
-            </li>
-          )}
-        </ul>
-      )}
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead className="text-[var(--text-dim)]">
-            <tr>
-              <th scope="col" className="hidden sm:table-cell">
-                Cible
-              </th>
-              <th scope="col">Pokémon</th>
-              <th scope="col">Réponse</th>
-              <th scope="col">Écart</th>
-              <th scope="col">Points</th>
-            </tr>
-          </thead>
-          <tbody className="mono">
-            {rounds.map((round, index) => {
-              const answer = round.answerId === null ? null : tryPokemonById(round.answerId);
-              return (
-                <tr key={`${round.targetId}-${index}`}>
-                  <td className="hidden sm:table-cell">
-                    {formatPokedexNumber(round.targetId, maxId)}
-                  </td>
-                  <td>{pokemonById(round.targetId).nameFr}</td>
-                  <td>{answer?.nameFr ?? "—"}</td>
-                  <td>
-                    {round.answerId === null ? "—" : gapBetween(round.targetId, round.answerId)}
-                  </td>
-                  <td>{round.points}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+    <section className="flex flex-col gap-5">
+      <div className="pokedex-card p-6 flex flex-col items-center text-center gap-3 relative overflow-hidden">
+        <h1 className="text-3xl font-extrabold tracking-tight">Partie terminée</h1>
+        <p className="mono text-5xl font-black glow-yellow" style={{ color: "var(--accent)" }}>
+          {total} / {rounds.length * MAX_SCORE}
+        </p>
+        {isRecord ? (
+          <p
+            className="text-sm font-semibold rounded-full px-3 py-1 border border-[var(--success)] bg-[color-mix(in_srgb,var(--success)_12%,transparent)]"
+            style={{ color: "var(--success)" }}
+          >
+            ★ Nouveau record pour cette configuration.
+          </p>
+        ) : (
+          previousBest !== null && (
+            <p className="text-sm text-[var(--text-dim)]">Votre record : {previousBest}</p>
+          )
+        )}
       </div>
-      <Button onClick={onReplay}>Rejouer</Button>
+
+      {stats.roundsPlayed > 0 && (
+        <div className="pokedex-card p-4">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-[var(--text-dim)]">
+            <li className="flex items-center justify-between p-2 rounded-[var(--radius-sm)] bg-[var(--surface-2)]">
+              <span>Écart moyen :</span>
+              <span className="mono font-bold text-[var(--text)]">
+                {stats.averageGap?.toLocaleString("fr-FR", {
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
+                })}
+              </span>
+            </li>
+            <li className="flex items-center justify-between p-2 rounded-[var(--radius-sm)] bg-[var(--surface-2)]">
+              <span>Réponses exactes :</span>
+              <span className="mono font-bold text-[var(--text)]">
+                {stats.exactHits} / {stats.roundsPlayed}
+              </span>
+            </li>
+            {stats.weakestGeneration !== null && (
+              <li className="sm:col-span-2 flex items-center justify-between p-2 rounded-[var(--radius-sm)] bg-[var(--surface-2)]">
+                <span>Génération à travailler :</span>
+                <span className="mono font-bold text-[var(--warn)]">
+                  Génération {stats.weakestGeneration}
+                </span>
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+
+      <div className="pokedex-card overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="text-[var(--text-dim)] border-b border-[var(--border)] bg-[var(--surface-2)]">
+              <tr>
+                <th scope="col" className="hidden sm:table-cell px-4 py-3">
+                  Cible
+                </th>
+                <th scope="col" className="px-4 py-3">Pokémon</th>
+                <th scope="col" className="px-4 py-3">Réponse</th>
+                <th scope="col" className="px-4 py-3">Écart</th>
+                <th scope="col" className="px-4 py-3">Points</th>
+              </tr>
+            </thead>
+            <tbody className="mono divide-y divide-[var(--border)]/50">
+              {rounds.map((round, index) => {
+                const answer = round.answerId === null ? null : tryPokemonById(round.answerId);
+                const isExact = round.points === 1000;
+                return (
+                  <tr
+                    key={`${round.targetId}-${index}`}
+                    className={`transition-colors hover:bg-[var(--surface-2)]/50 ${
+                      isExact ? "bg-[color-mix(in_srgb,var(--success)_5%,transparent)]" : ""
+                    }`}
+                  >
+                    <td className="hidden sm:table-cell px-4 py-2.5 text-[var(--text-dim)]">
+                      {formatPokedexNumber(round.targetId, maxId)}
+                    </td>
+                    <td className="px-4 py-2.5 font-semibold font-sans">{pokemonById(round.targetId).nameFr}</td>
+                    <td className="px-4 py-2.5">{answer?.nameFr ?? "—"}</td>
+                    <td className="px-4 py-2.5 text-[var(--text-dim)]">
+                      {round.answerId === null ? "—" : gapBetween(round.targetId, round.answerId)}
+                    </td>
+                    <td
+                      className="px-4 py-2.5 font-bold"
+                      style={{ color: isExact ? "var(--success)" : "inherit" }}
+                    >
+                      {round.points}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <Button onClick={onReplay} className="py-3.5 text-base">Rejouer</Button>
     </section>
   );
 }
