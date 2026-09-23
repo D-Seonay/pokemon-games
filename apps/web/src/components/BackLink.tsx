@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useI18n } from "../i18n/I18nContext.js";
 
 /**
  * Le retour, en tête d'écran. Il était auparavant en bas de page : sur le Pokédex, il
@@ -6,13 +7,10 @@ import { Link } from "react-router-dom";
  * aussi le premier élément focalisable de la page, donc celui qu'une tabulation atteint
  * en premier — ce qu'on attend d'une commande de retour.
  */
-export function BackLink({
-  to = "/",
-  label = "Retour à l'accueil",
-}: {
-  to?: string;
-  label?: string;
-}) {
+export function BackLink({ to = "/", label }: { to?: string; label?: string }) {
+  const { t } = useI18n();
+  const displayLabel = label ?? t.errorBoundaryReturn;
+
   return (
     <Link
       to={to}
@@ -21,7 +19,7 @@ export function BackLink({
       <span aria-hidden="true" className="transition-transform group-hover:-translate-x-0.5">
         ←
       </span>
-      {label}
+      {displayLabel}
     </Link>
   );
 }

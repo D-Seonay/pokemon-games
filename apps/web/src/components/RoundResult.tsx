@@ -2,6 +2,7 @@ import { type Pool, gapBetween, pokemonById, tryPokemonById } from "@pkfind/shar
 import { useEffect, useRef } from "react";
 import { formatPokedexNumber } from "../format.js";
 import type { SoloRound } from "../game/useSoloGame.js";
+import { useI18n } from "../i18n/I18nContext.js";
 import { PokemonSprite } from "./PokemonSprite.js";
 
 export function RoundResult({
@@ -13,6 +14,7 @@ export function RoundResult({
   pool: Pool;
   onSkip?: () => void;
 }) {
+  const { lang, pokemonName } = useI18n();
   const sectionRef = useRef<HTMLElement>(null);
 
   // Le champ de réponse disparaît avec la manche (voir PokemonCombobox, qui se focalise
@@ -35,11 +37,25 @@ export function RoundResult({
     round.answerId === null || round.answerId === round.targetId
       ? ""
       : round.answerId < round.targetId
-        ? ", trop bas"
-        : ", trop haut";
+        ? lang === "en"
+          ? ", too low"
+          : ", trop bas"
+        : lang === "en"
+          ? ", too high"
+          : ", trop haut";
 
   const isExact = round.points === 1000;
   const isGood = round.points >= 500;
+
+  const targetName = pokemonName(target);
+  const answerName = answer ? pokemonName(answer) : "";
+  const answerText = answer
+    ? lang === "en"
+      ? `Your answer: ${answerName} ${formatPokedexNumber(answer.id, pool.maxId)} — diff ${gap}${direction}`
+      : `Votre réponse : ${answerName} ${formatPokedexNumber(answer.id, pool.maxId)} — écart ${gap}${direction}`
+    : lang === "en"
+      ? "No answer — time expired"
+      : "Pas de réponse — temps écoulé";
 
   return (
     <section
@@ -70,18 +86,14 @@ export function RoundResult({
       </div>
 
       <div className="flex flex-col items-center">
-        <p className="text-3xl font-extrabold tracking-tight text-[var(--text)]">{target.nameFr}</p>
+        <p className="text-3xl font-extrabold tracking-tight text-[var(--text)]">{targetName}</p>
         <p className="mono text-sm font-semibold text-[var(--text-dim)]">
           {formatPokedexNumber(target.id, pool.maxId)}
         </p>
       </div>
 
       <div className="rounded-[var(--radius-sm)] bg-[var(--surface-2)] border border-[var(--border)] px-4 py-2 text-sm text-[var(--text-dim)]">
-        <p>
-          {answer
-            ? `Votre réponse : ${answer.nameFr} ${formatPokedexNumber(answer.id, pool.maxId)} — écart ${gap}${direction}`
-            : "Pas de réponse — temps écoulé"}
-        </p>
+        <p>{answerText}</p>
       </div>
 
       <p
@@ -96,7 +108,7 @@ export function RoundResult({
 
       {onSkip && (
         <p className="text-xs font-medium text-[var(--text-dim)] bg-[var(--surface-2)]/60 px-3 py-1 rounded-full border border-[var(--border)]/60">
-          Clic ou Entrée pour continuer
+          {lang === "en" ? "Click or Enter to continue" : "Clic ou Entrée pour continuer"}
         </p>
       )}
     </section>

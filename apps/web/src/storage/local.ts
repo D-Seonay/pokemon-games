@@ -5,6 +5,7 @@ export const KEYS = {
   dailyHistory: "pkfind.daily-history.v1",
   soloHistory: "pkfind.solo-history.v1",
   session: "pkfind.session.v1",
+  language: "pkfind.language.v1",
 } as const;
 
 type Kind = "local" | "session";

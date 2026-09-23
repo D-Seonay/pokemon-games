@@ -85,7 +85,7 @@ export const ERROR_CODES = [
 
 export type ErrorCode = (typeof ERROR_CODES)[number];
 
-export const ERROR_MESSAGES: Record<ErrorCode, string> = {
+export const ERROR_MESSAGES_FR: Record<ErrorCode, string> = {
   ROOM_NOT_FOUND: "Cette room n'existe pas ou plus.",
   ROOM_FULL: "Cette room est complète (8 joueurs maximum).",
   GAME_IN_PROGRESS: "La partie a déjà commencé, impossible de rejoindre.",
@@ -106,6 +106,29 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   CODE_EXHAUSTED: "Impossible de générer un code, réessaie.",
   INTERNAL: "Une erreur est survenue, réessaie dans un instant.",
 };
+
+export const ERROR_MESSAGES_EN: Record<ErrorCode, string> = {
+  ROOM_NOT_FOUND: "This room does not exist or has expired.",
+  ROOM_FULL: "This room is full (maximum 8 players).",
+  GAME_IN_PROGRESS: "The game has already started, cannot join.",
+  NOT_HOST: "Only the host can do this.",
+  NOT_IN_ROOM: "You are not in this room.",
+  NOT_ENOUGH_PLAYERS: "At least 2 connected players are required to start.",
+  INVALID_NICKNAME: "Invalid nickname: 2 to 16 characters, letters and numbers.",
+  INVALID_SETTINGS: "Invalid game settings: check the selected generations and round duration.",
+  INVALID_CODE: "This code contains an invalid character.",
+  ALREADY_ANSWERED: "You have already answered this round.",
+  ROUND_CLOSED: "Too late, the round is over.",
+  BLITZ_CLOSED: "Too late, the game is over.",
+  NOT_IN_POOL: "This Pokémon is not part of the selection.",
+  INVALID_TOKEN: "Invalid session, please reconnect.",
+  RATE_LIMITED: "Too many requests, please slow down.",
+  SERVER_BUSY: "The server is busy, please try again in a moment.",
+  CODE_EXHAUSTED: "Unable to generate a room code, please try again.",
+  INTERNAL: "An error occurred, please try again in a moment.",
+};
+
+export const ERROR_MESSAGES: Record<ErrorCode, string> = ERROR_MESSAGES_FR;
 
 export type Ack<T> = { ok: true; data: T } | { ok: false; code: ErrorCode; message: string };
 

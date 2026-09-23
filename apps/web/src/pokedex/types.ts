@@ -1,9 +1,7 @@
 /**
- * Les dix-huit types, avec leur nom français et leur couleur. Table locale plutôt que
- * donnée téléchargée : ces valeurs ne changent jamais, et les avoir en dur évite de faire
- * dépendre l'affichage du fichier de détails, qui peut ne pas être encore arrivé.
+ * Les dix-huit types, avec leur nom français/anglais et leur couleur.
  */
-const TYPE_LABELS: Readonly<Record<string, string>> = {
+const TYPE_LABELS_FR: Readonly<Record<string, string>> = {
   normal: "Normal",
   fire: "Feu",
   water: "Eau",
@@ -22,6 +20,27 @@ const TYPE_LABELS: Readonly<Record<string, string>> = {
   dark: "Ténèbres",
   steel: "Acier",
   fairy: "Fée",
+};
+
+const TYPE_LABELS_EN: Readonly<Record<string, string>> = {
+  normal: "Normal",
+  fire: "Fire",
+  water: "Water",
+  electric: "Electric",
+  grass: "Grass",
+  ice: "Ice",
+  fighting: "Fighting",
+  poison: "Poison",
+  ground: "Ground",
+  flying: "Flying",
+  psychic: "Psychic",
+  bug: "Bug",
+  rock: "Rock",
+  ghost: "Ghost",
+  dragon: "Dragon",
+  dark: "Dark",
+  steel: "Steel",
+  fairy: "Fairy",
 };
 
 const TYPE_COLORS: Readonly<Record<string, string>> = {
@@ -46,8 +65,9 @@ const TYPE_COLORS: Readonly<Record<string, string>> = {
 };
 
 /** Un type inconnu garde son identifiant brut plutôt que de disparaître de l'écran. */
-export function labelOfType(type: string): string {
-  return TYPE_LABELS[type] ?? type;
+export function labelOfType(type: string, lang = "fr"): string {
+  const dict = lang === "en" ? TYPE_LABELS_EN : TYPE_LABELS_FR;
+  return dict[type] ?? type;
 }
 
 export function colorOfType(type: string): string {

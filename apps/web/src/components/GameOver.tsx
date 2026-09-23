@@ -9,6 +9,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatPokedexNumber } from "../format.js";
 import type { SoloRound } from "../game/useSoloGame.js";
+import { useI18n } from "../i18n/I18nContext.js";
 import { readBest, saveBest } from "../storage/scores.js";
 import {
   type SoloHistoryEntry,
@@ -28,6 +29,7 @@ export function GameOver({
   settings: GameSettings;
   onReplay: () => void;
 }) {
+  const { lang, t, pokemonName } = useI18n();
   const total = rounds.reduce((sum, round) => sum + round.points, 0);
   const maxId = useMemo(() => buildPool(settings.generations).maxId, [settings.generations]);
 
@@ -73,7 +75,7 @@ export function GameOver({
   return (
     <section className="flex flex-col gap-5">
       <div className="pokedex-card p-6 flex flex-col items-center text-center gap-3 relative overflow-hidden">
-        <h1 className="text-3xl font-extrabold tracking-tight">Partie terminée</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">{t.gameOverTitle}</h1>
         <p className="mono text-5xl font-black glow-yellow" style={{ color: "var(--accent)" }}>
           {total} / {rounds.length * MAX_SCORE}
         </p>
@@ -82,11 +84,15 @@ export function GameOver({
             className="text-sm font-semibold rounded-full px-3 py-1 border border-[var(--success)] bg-[color-mix(in_srgb,var(--success)_12%,transparent)]"
             style={{ color: "var(--success)" }}
           >
-            ★ Nouveau record pour cette configuration.
+            {lang === "en"
+              ? "★ New record for this configuration."
+              : "★ Nouveau record pour cette configuration."}
           </p>
         ) : (
           previousBest !== null && (
-            <p className="text-sm text-[var(--text-dim)]">Votre record : {previousBest}</p>
+            <p className="text-sm text-[var(--text-dim)]">
+              {lang === "en" ? `High score: ${previousBest}` : `Votre record : ${previousBest}`}
+            </p>
           )
         )}
       </div>
@@ -95,25 +101,29 @@ export function GameOver({
         <div className="pokedex-card p-4">
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-[var(--text-dim)]">
             <li className="flex items-center justify-between p-2 rounded-[var(--radius-sm)] bg-[var(--surface-2)]">
-              <span>Écart moyen :</span>
+              <span>{lang === "en" ? "Average difference:" : "Écart moyen :"}</span>
               <span className="mono font-bold text-[var(--text)]">
-                {stats.averageGap?.toLocaleString("fr-FR", {
+                {stats.averageGap?.toLocaleString(lang === "en" ? "en-US" : "fr-FR", {
                   minimumFractionDigits: 1,
                   maximumFractionDigits: 1,
                 })}
               </span>
             </li>
             <li className="flex items-center justify-between p-2 rounded-[var(--radius-sm)] bg-[var(--surface-2)]">
-              <span>Réponses exactes :</span>
+              <span>{lang === "en" ? "Exact matches:" : "Réponses exactes :"}</span>
               <span className="mono font-bold text-[var(--text)]">
                 {stats.exactHits} / {stats.roundsPlayed}
               </span>
             </li>
             {stats.weakestGeneration !== null && (
               <li className="sm:col-span-2 flex items-center justify-between p-2 rounded-[var(--radius-sm)] bg-[var(--surface-2)]">
-                <span>Génération à travailler :</span>
+                <span>
+                  {lang === "en" ? "Generation to practice:" : "Génération à travailler :"}
+                </span>
                 <span className="mono font-bold text-[var(--warn)]">
-                  Génération {stats.weakestGeneration}
+                  {lang === "en"
+                    ? `Generation ${stats.weakestGeneration}`
+                    : `Génération ${stats.weakestGeneration}`}
                 </span>
               </li>
             )}
@@ -127,16 +137,16 @@ export function GameOver({
             <thead className="text-[var(--text-dim)] border-b border-[var(--border)] bg-[var(--surface-2)]">
               <tr>
                 <th scope="col" className="hidden sm:table-cell px-4 py-3">
-                  Cible
+                  {lang === "en" ? "Target" : "Cible"}
                 </th>
                 <th scope="col" className="px-4 py-3">
                   Pokémon
                 </th>
                 <th scope="col" className="px-4 py-3">
-                  Réponse
+                  {lang === "en" ? "Answer" : "Réponse"}
                 </th>
                 <th scope="col" className="px-4 py-3">
-                  Écart
+                  {lang === "en" ? "Diff" : "Écart"}
                 </th>
                 <th scope="col" className="px-4 py-3">
                   Points
@@ -145,6 +155,7 @@ export function GameOver({
             </thead>
             <tbody className="mono divide-y divide-[var(--border)]/50">
               {rounds.map((round, index) => {
+                const targetPk = pokemonById(round.targetId);
                 const answer = round.answerId === null ? null : tryPokemonById(round.answerId);
                 const isExact = round.points === 1000;
                 return (
@@ -157,10 +168,8 @@ export function GameOver({
                     <td className="hidden sm:table-cell px-4 py-2.5 text-[var(--text-dim)]">
                       {formatPokedexNumber(round.targetId, maxId)}
                     </td>
-                    <td className="px-4 py-2.5 font-semibold font-sans">
-                      {pokemonById(round.targetId).nameFr}
-                    </td>
-                    <td className="px-4 py-2.5">{answer?.nameFr ?? "—"}</td>
+                    <td className="px-4 py-2.5 font-semibold font-sans">{pokemonName(targetPk)}</td>
+                    <td className="px-4 py-2.5">{answer ? pokemonName(answer) : "—"}</td>
                     <td className="px-4 py-2.5 text-[var(--text-dim)]">
                       {round.answerId === null ? "—" : gapBetween(round.targetId, round.answerId)}
                     </td>
@@ -179,7 +188,7 @@ export function GameOver({
       </div>
 
       <Button onClick={onReplay} className="py-3.5 text-base">
-        Rejouer
+        {t.playAgain}
       </Button>
     </section>
   );

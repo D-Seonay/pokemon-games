@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { BackLink } from "../components/BackLink.js";
+import { useI18n } from "../i18n/I18nContext.js";
 import {
   MIN_GENERATION_SAMPLE,
   computeStats,
@@ -8,11 +9,15 @@ import {
   readSoloHistory,
 } from "../storage/stats.js";
 
-function formatGap(value: number): string {
-  return value.toLocaleString("fr-FR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+function formatGap(value: number, lang: string): string {
+  return value.toLocaleString(lang === "en" ? "en-US" : "fr-FR", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 }
 
 export function Stats() {
+  const { lang, t } = useI18n();
   // Lu une seule fois au montage : rien ici n'écrit dans le stockage, mais l'initialiseur
   // paresseux garde la lecture hors du corps du composant, où elle serait rejouée à chaque
   // rendu sans raison.
@@ -25,17 +30,18 @@ export function Stats() {
     return (
       <section className="flex flex-col gap-4">
         <BackLink />
-        <h1 className="text-3xl font-extrabold tracking-tight">Statistiques</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">{t.statsTitle}</h1>
         <div className="pokedex-card p-6 flex flex-col gap-3">
           <p className="text-[var(--text-dim)]">
-            Aucune partie solo terminée pour l'instant. Vos écarts et vos réponses exactes
-            s'accumuleront ici au fil des parties.
+            {lang === "en"
+              ? "No solo games completed yet. Your accuracy and exact matches will accumulate here over time."
+              : "Aucune partie solo terminée pour l'instant. Vos écarts et vos réponses exactes s'accumuleront ici au fil des parties."}
           </p>
           <Link
             to="/solo"
             className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--accent)] px-4 py-2 text-sm font-bold text-[#0a0c12] shadow-sm hover:bg-[#ffd833] transition-colors"
           >
-            Jouer une partie
+            {lang === "en" ? "Play a game" : "Jouer une partie"}
           </Link>
         </div>
       </section>
@@ -45,32 +51,32 @@ export function Stats() {
   return (
     <section className="flex flex-col gap-6">
       <BackLink />
-      <h1 className="text-3xl font-extrabold tracking-tight">Statistiques</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">{t.statsTitle}</h1>
 
       <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="pokedex-card p-4 flex flex-col gap-1">
           <dt className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]">
-            Parties
+            {lang === "en" ? "Games" : "Parties"}
           </dt>
           <dd className="mono text-3xl font-bold text-[var(--text)]">{history.length}</dd>
         </div>
         <div className="pokedex-card p-4 flex flex-col gap-1">
           <dt className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]">
-            Manches répondues
+            {lang === "en" ? "Rounds answered" : "Manches répondues"}
           </dt>
           <dd className="mono text-3xl font-bold text-[var(--text)]">{stats.roundsPlayed}</dd>
         </div>
         <div className="pokedex-card p-4 flex flex-col gap-1">
           <dt className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]">
-            Écart moyen
+            {lang === "en" ? "Average difference" : "Écart moyen"}
           </dt>
           <dd className="mono text-3xl font-bold text-[var(--accent)] glow-yellow">
-            {stats.averageGap === null ? "—" : formatGap(stats.averageGap)}
+            {stats.averageGap === null ? "—" : formatGap(stats.averageGap, lang)}
           </dd>
         </div>
         <div className="pokedex-card p-4 flex flex-col gap-1">
           <dt className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]">
-            Réponses exactes
+            {lang === "en" ? "Exact matches" : "Réponses exactes"}
           </dt>
           <dd className="mono text-3xl font-bold text-[var(--success)]">{stats.exactHits}</dd>
         </div>
@@ -82,9 +88,11 @@ export function Stats() {
             ⚠️
           </span>
           <p className="text-sm">
-            Génération à travailler :{" "}
+            {lang === "en" ? "Generation to practice: " : "Génération à travailler : "}
             <strong className="mono font-bold text-[var(--warn)]">
-              Génération {stats.weakestGeneration}
+              {lang === "en"
+                ? `Generation ${stats.weakestGeneration}`
+                : `Génération ${stats.weakestGeneration}`}
             </strong>
           </p>
         </div>
@@ -93,17 +101,19 @@ export function Stats() {
       <div className="pokedex-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <caption className="sr-only">Écart moyen par génération</caption>
+            <caption className="sr-only">
+              {lang === "en" ? "Average difference per generation" : "Écart moyen par génération"}
+            </caption>
             <thead className="text-[var(--text-dim)] border-b border-[var(--border)] bg-[var(--surface-2)]">
               <tr>
                 <th scope="col" className="px-4 py-3">
-                  Génération
+                  {lang === "en" ? "Generation" : "Génération"}
                 </th>
                 <th scope="col" className="px-4 py-3">
-                  Manches
+                  {lang === "en" ? "Rounds" : "Manches"}
                 </th>
                 <th scope="col" className="px-4 py-3">
-                  Écart moyen
+                  {lang === "en" ? "Average difference" : "Écart moyen"}
                 </th>
               </tr>
             </thead>
@@ -114,14 +124,18 @@ export function Stats() {
                   className="hover:bg-[var(--surface-2)]/50 transition-colors"
                 >
                   <th scope="row" className="font-normal px-4 py-2.5">
-                    Génération {row.generation}
+                    {lang === "en"
+                      ? `Generation ${row.generation}`
+                      : `Génération ${row.generation}`}
                   </th>
                   <td className="px-4 py-2.5 text-[var(--text-dim)]">{row.roundsPlayed}</td>
                   <td className="px-4 py-2.5 font-bold">
-                    {formatGap(row.averageGap)}
+                    {formatGap(row.averageGap, lang)}
                     {!row.significant && (
                       <span className="ml-2 text-xs font-normal text-[var(--text-dim)]">
-                        (moins de {MIN_GENERATION_SAMPLE} manches)
+                        {lang === "en"
+                          ? `(less than ${MIN_GENERATION_SAMPLE} rounds)`
+                          : `(moins de ${MIN_GENERATION_SAMPLE} manches)`}
                       </span>
                     )}
                   </td>
@@ -133,8 +147,9 @@ export function Stats() {
       </div>
 
       <p className="text-xs text-[var(--text-dim)]">
-        Une génération n'est désignée comme la plus faible qu'à partir de {MIN_GENERATION_SAMPLE}{" "}
-        manches jouées : en dessous, l'écart ne prouve rien.
+        {lang === "en"
+          ? `A generation is only flagged as weakest after at least ${MIN_GENERATION_SAMPLE} rounds played.`
+          : `Une génération n'est désignée comme la plus faible qu'à partir de ${MIN_GENERATION_SAMPLE} manches jouées : en dessous, l'écart ne prouve rien.`}
       </p>
     </section>
   );

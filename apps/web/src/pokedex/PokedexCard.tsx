@@ -1,6 +1,7 @@
 import type { Pokemon } from "@pkfind/shared";
 import { PokemonSprite } from "../components/PokemonSprite.js";
 import { formatPokedexNumber } from "../format.js";
+import { useI18n } from "../i18n/I18nContext.js";
 import type { PokemonDetail } from "./details.js";
 import { TypeBadge } from "./TypeBadge.js";
 
@@ -16,11 +17,17 @@ export function PokedexCard({
   maxId: number;
   onOpen: () => void;
 }) {
+  const { lang, pokemonName } = useI18n();
+  const primaryName = pokemonName(pokemon);
+  const secondaryName = lang === "en" ? pokemon.nameFr : pokemon.nameEn;
+  const ariaLabel =
+    lang === "en" ? `${pokemon.nameEn}, view details` : `${pokemon.nameFr}, voir la fiche`;
+
   return (
     <button
       type="button"
       onClick={onOpen}
-      aria-label={`${pokemon.nameFr}, voir la fiche`}
+      aria-label={ariaLabel}
       className="pokedex-card group relative flex flex-col items-center gap-1.5 p-3.5 text-center cursor-pointer transition-all hover:-translate-y-1 hover:border-[var(--accent)] hover:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.6),0_0_15px_rgba(255,203,5,0.15)] focus-visible:border-[var(--accent)] active:scale-[0.98] outline-none"
     >
       <span className="mono text-xs font-semibold text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors">
@@ -30,11 +37,11 @@ export function PokedexCard({
         <PokemonSprite pokemon={pokemon} size={72} />
       </div>
       <span className="text-sm font-bold leading-tight text-[var(--text)] group-hover:text-[var(--accent)] transition-colors">
-        {pokemon.nameFr}
+        {primaryName}
       </span>
       {pokemon.nameEn !== pokemon.nameFr && (
         <span className="text-xs leading-tight text-[var(--text-dim)] font-medium">
-          {pokemon.nameEn}
+          {secondaryName}
         </span>
       )}
       {detail && (
