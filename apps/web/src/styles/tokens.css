@@ -85,8 +85,9 @@
   font-display: swap;
   src: url("/fonts/space-mono-700-vietnamese.woff2") format("woff2");
   unicode-range:
-    U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301,
-    U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
 }
 
 @font-face {
@@ -113,27 +114,40 @@
 }
 
 :root {
-  --bg: #0a0b0f;
-  --surface: #14161d;
-  --surface-2: #1d202a;
-  --border: #2a2e3a;
-  --text: #e8eaf0;
-  --text-dim: #9aa0ae;
+  --bg: #0a0c12;
+  --surface: #131722;
+  --surface-2: #1b202e;
+  --surface-elevated: #23293b;
+  --border: #262d3f;
+  --border-hover: #3b455f;
+  --border-focus: #4e5e82;
+  --text: #f0f3fa;
+  --text-dim: #9aa4b8;
   --accent: #ffcb05;
+  --accent-hover: #ffd833;
   --accent-2: #3d7bff;
+  --accent-2-hover: #5c92ff;
+  --accent-red: #ff3e55;
   --success: #35d07f;
   --warn: #ffb020;
   --danger: #ff4d5e;
-  --radius: 14px;
-  --radius-sm: 8px;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
 }
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 90% 50% at 50% -15%, rgba(61, 123, 255, 0.1), transparent),
+    radial-gradient(circle 500px at 100% 10%, rgba(255, 203, 5, 0.05), transparent),
+    radial-gradient(circle 400px at 0% 90%, rgba(61, 123, 255, 0.06), transparent);
+  background-attachment: fixed;
   color: var(--text);
   font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
 }
 
 .mono {
@@ -156,6 +170,77 @@ body {
 :focus-visible {
   outline: 2px solid var(--accent-2);
   outline-offset: 2px;
+}
+
+/* Custom modern scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* Modern Card with subtle top edge glow */
+.pokedex-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+.pokedex-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 203, 5, 0.08);
+}
+
+/* Glow effects */
+.glow-yellow {
+  text-shadow: 0 0 25px rgba(255, 203, 5, 0.45);
+}
+
+.glow-blue {
+  text-shadow: 0 0 25px rgba(61, 123, 255, 0.45);
+}
+
+.box-glow-yellow {
+  box-shadow: 0 0 20px rgba(255, 203, 5, 0.25);
+}
+
+.box-glow-blue {
+  box-shadow: 0 0 20px rgba(61, 123, 255, 0.25);
+}
+
+.box-glow-green {
+  box-shadow: 0 0 20px rgba(53, 208, 127, 0.3);
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes pulse-urgent {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px var(--danger)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 12px var(--danger)); }
+}
+
+[data-state="danger"] svg {
+  animation: pulse-urgent 0.8s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

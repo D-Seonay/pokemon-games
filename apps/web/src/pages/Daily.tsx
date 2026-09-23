@@ -62,9 +62,9 @@ function DailyBoard({
 
   return (
     <section className="flex flex-col gap-4">
-      <header className="flex items-center justify-between">
-        <h1 className="text-xl font-extrabold">Défi du jour — {today}</h1>
-        <p className="mono">{game.totalScore} pts</p>
+      <header className="pokedex-card flex items-center justify-between px-4 py-3">
+        <h1 className="text-xl font-extrabold tracking-tight">Défi du jour — {today}</h1>
+        <p className="mono font-bold text-base text-[var(--accent)] glow-yellow">{game.totalScore} pts</p>
       </header>
       <p className="mono text-sm text-[var(--text-dim)]">
         Manche {game.roundIndex + 1} / {game.roundCount} · Pokédex national
@@ -96,35 +96,41 @@ function DailyResult({ entry, today }: { entry: DailyEntry; today: string }) {
     date: new Date(`${entry.date}T12:00:00Z`),
     total: entry.total,
     points: entry.points,
-    url: `${window.location.origin}/daily`,
+    url: `${window.location.origin}/daily` ,
   });
 
   return (
     <section className="flex flex-col gap-4 text-center">
       <BackLink />
-      <h1 className="text-2xl font-extrabold">Défi du jour — {entry.date}</h1>
-      <p className="mono text-5xl" style={{ color: "var(--accent)" }}>
-        {entry.total.toLocaleString("fr-FR")} / {max.toLocaleString("fr-FR")}
-      </p>
-      <p className="text-3xl tracking-widest">{emojis}</p>
-      {streak > 0 && (
-        <p className="text-[var(--text-dim)]">
-          <span className="mono text-[var(--accent)]">{streak}</span>{" "}
-          {streak === 1 ? "jour d'affilée" : "jours d'affilée"}
+      <div className="pokedex-card p-6 flex flex-col items-center gap-3">
+        <h1 className="text-2xl font-extrabold tracking-tight">Défi du jour — {entry.date}</h1>
+        <p className="mono text-5xl font-black glow-yellow" style={{ color: "var(--accent)" }}>
+          {entry.total.toLocaleString("fr-FR")} / {max.toLocaleString("fr-FR")}
         </p>
-      )}
+        <p className="text-3xl tracking-widest">{emojis}</p>
+        {streak > 0 && (
+          <p className="text-[var(--text-dim)] text-sm">
+            <span className="mono font-bold text-[var(--accent)]">{streak}</span>{" "}
+            {streak === 1 ? "jour d'affilée" : "jours d'affilée"}
+          </p>
+        )}
+      </div>
+
       {history.length > 1 && (
-        <ul className="flex flex-wrap justify-center gap-1" aria-label="Trente derniers jours">
-          {history.map((day) => (
-            <li
-              key={day.date}
-              title={`${day.date} — ${day.total.toLocaleString("fr-FR")}`}
-              className="text-lg leading-none"
-            >
-              {TIER_EMOJI[tierOf(Math.round(day.total / Math.max(1, day.points.length)))]}
-            </li>
-          ))}
-        </ul>
+        <div className="pokedex-card p-4 flex flex-col items-center gap-2">
+          <p className="text-xs uppercase font-semibold text-[var(--text-dim)]">Historique récent</p>
+          <ul className="flex flex-wrap justify-center gap-1.5" aria-label="Trente derniers jours">
+            {history.map((day) => (
+              <li
+                key={day.date}
+                title={`${day.date} — ${day.total.toLocaleString("fr-FR")}`}
+                className="text-lg leading-none p-1 rounded hover:bg-[var(--surface-2)] transition-colors"
+              >
+                {TIER_EMOJI[tierOf(Math.round(day.total / Math.max(1, day.points.length)))]}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
       <CopyButton value={summary} label="Partager le résultat" />
       <p className="text-sm text-[var(--text-dim)]">Reviens demain pour un nouveau défi.</p>

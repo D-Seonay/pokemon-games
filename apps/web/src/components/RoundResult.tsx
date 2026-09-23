@@ -38,6 +38,9 @@ export function RoundResult({
         ? ", trop bas"
         : ", trop haut";
 
+  const isExact = round.points === 1000;
+  const isGood = round.points >= 500;
+
   return (
     <section
       ref={sectionRef}
@@ -48,20 +51,56 @@ export function RoundResult({
       onKeyDown={(event) => {
         if (event.key === "Enter") onSkip?.();
       }}
-      className="flex flex-col items-center gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] p-6 text-center"
+      className={`pokedex-card flex flex-col items-center gap-3 p-6 text-center cursor-pointer transition-all outline-none focus-visible:border-[var(--accent)] ${
+        isExact
+          ? "border-[var(--success)] shadow-[0_0_30px_rgba(53,208,127,0.25)] bg-[radial-gradient(ellipse_at_top,rgba(53,208,127,0.12)_0%,var(--surface)_70%)]"
+          : isGood
+          ? "border-[var(--accent)] shadow-[0_0_25px_rgba(255,203,5,0.15)] bg-[radial-gradient(ellipse_at_top,rgba(255,203,5,0.08)_0%,var(--surface)_70%)]"
+          : "border-[var(--border)]"
+      }`}
     >
-      <PokemonSprite pokemon={target} size={160} />
-      <p className="text-2xl font-extrabold">{target.nameFr}</p>
-      <p className="mono text-[var(--text-dim)]">{formatPokedexNumber(target.id, pool.maxId)}</p>
-      <p>
-        {answer
-          ? `Votre réponse : ${answer.nameFr} ${formatPokedexNumber(answer.id, pool.maxId)} — écart ${gap}${direction}`
-          : "Pas de réponse — temps écoulé"}
-      </p>
-      <p className="mono text-4xl" style={{ color: "var(--accent)" }}>
+      <div className="relative flex items-center justify-center p-3">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 rounded-full bg-gradient-to-b from-white/10 to-transparent blur-md -z-0"
+        />
+        <div className="relative z-10 drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]">
+          <PokemonSprite pokemon={target} size={160} />
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center">
+        <p className="text-3xl font-extrabold tracking-tight text-[var(--text)]">{target.nameFr}</p>
+        <p className="mono text-sm font-semibold text-[var(--text-dim)]">
+          {formatPokedexNumber(target.id, pool.maxId)}
+        </p>
+      </div>
+
+      <div className="rounded-[var(--radius-sm)] bg-[var(--surface-2)] border border-[var(--border)] px-4 py-2 text-sm text-[var(--text-dim)]">
+        <p>
+          {answer
+            ? `Votre réponse : ${answer.nameFr} ${formatPokedexNumber(answer.id, pool.maxId)} — écart ${gap}${direction}`
+            : "Pas de réponse — temps écoulé"}
+        </p>
+      </div>
+
+      <p
+        className="mono text-5xl font-black tracking-tight"
+        style={{
+          color: isExact ? "var(--success)" : "var(--accent)",
+          textShadow: isExact
+            ? "0 0 25px rgba(53,208,127,0.5)"
+            : "0 0 25px rgba(255,203,5,0.4)",
+        }}
+      >
         +{round.points}
       </p>
-      {onSkip && <p className="text-sm text-[var(--text-dim)]">Clic ou Entrée pour continuer</p>}
+
+      {onSkip && (
+        <p className="text-xs font-medium text-[var(--text-dim)] bg-[var(--surface-2)]/60 px-3 py-1 rounded-full border border-[var(--border)]/60">
+          Clic ou Entrée pour continuer
+        </p>
+      )}
     </section>
   );
 }

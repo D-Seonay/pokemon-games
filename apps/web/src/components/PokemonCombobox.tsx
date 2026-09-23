@@ -124,13 +124,13 @@ export function PokemonCombobox({ pool, disabled = false, onSubmit }: Props) {
             }
             setOpen(false);
           }}
-          className="mono h-14 w-full rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-4 text-lg text-[var(--text)]"
+          className="mono h-14 w-full rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-4 text-lg text-[var(--text)] font-semibold shadow-inner transition-all outline-none focus:border-[var(--accent)] focus:shadow-[0_0_18px_rgba(255,203,5,0.2)] disabled:opacity-50"
         />
         {open && suggestions.length > 0 && (
           <ul
             id={listId}
             role="listbox"
-            className="absolute z-10 mt-1 w-full overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-2)]"
+            className="absolute z-20 mt-2 w-full overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-2)] shadow-[0_12px_36px_rgba(0,0,0,0.7)] backdrop-blur-md"
           >
             {suggestions.map((pokemon, index) => (
               <li
@@ -143,14 +143,18 @@ export function PokemonCombobox({ pool, disabled = false, onSubmit }: Props) {
                   choose(pokemon);
                 }}
                 onMouseEnter={() => setActiveIndex(index)}
-                className={`flex cursor-pointer items-center gap-3 px-3 py-2 ${
-                  index === activeIndex ? "bg-[var(--surface)]" : ""
+                className={`flex cursor-pointer items-center gap-3 px-3.5 py-2.5 transition-colors border-b border-[var(--border)]/40 last:border-b-0 ${
+                  index === activeIndex
+                    ? "bg-[var(--surface-elevated)] border-l-4 border-l-[var(--accent)] text-[var(--text)]"
+                    : "text-[var(--text-dim)] hover:bg-[var(--surface-elevated)]/60 hover:text-[var(--text)]"
                 }`}
               >
-                <PokemonSprite pokemon={pokemon} size={32} />
-                <span>{pokemon.nameFr}</span>
+                <div className="shrink-0 p-0.5 rounded-full bg-[var(--surface)] border border-[var(--border)]">
+                  <PokemonSprite pokemon={pokemon} size={32} />
+                </div>
+                <span className="font-semibold text-sm">{pokemon.nameFr}</span>
                 {pokemon.nameEn !== pokemon.nameFr && (
-                  <span className="text-sm text-[var(--text-dim)]">{pokemon.nameEn}</span>
+                  <span className="text-xs text-[var(--text-dim)]">({pokemon.nameEn})</span>
                 )}
               </li>
             ))}

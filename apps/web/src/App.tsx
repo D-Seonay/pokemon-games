@@ -50,7 +50,7 @@ export function App() {
     // Se déclenche une seule fois par changement de pathname, à l'instant du commit de la
     // nouvelle route — pas de nouvelle tentative sur les rendus suivants. Certaines pages
     // (SoloGame en cours de manche, Room avant que l'état du serveur n'arrive) n'ont
-    // synchrone­ment aucun <h1> à cet instant ; on ne force rien dans ce cas plutôt que de
+    // synchroniquement aucun <h1> à cet instant ; on ne force rien dans ce cas plutôt que de
     // retenter indéfiniment, ce qui risquerait de voler le focus bien plus tard, en pleine
     // interaction, dès qu'un <h1> finirait par apparaître (ex. le classement final d'une
     // partie rejointe en cours de route, après de nombreux rendus).
@@ -60,8 +60,15 @@ export function App() {
     heading.focus();
   }, [location.pathname]);
 
+  const isWide = location.pathname.startsWith("/pokedex");
+
   return (
-    <main ref={mainRef} className="mx-auto min-h-screen w-full max-w-[560px] px-4 py-8">
+    <main
+      ref={mainRef}
+      className={`mx-auto min-h-screen w-full px-4 py-8 transition-all duration-300 ${
+        isWide ? "max-w-4xl" : "max-w-[580px]"
+      }`}
+    >
       <ErrorBoundary resetKey={location.pathname} fallback={<ErrorFallback />}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -84,12 +91,16 @@ export function App() {
 
 function ErrorFallback() {
   return (
-    <section role="alert" className="flex flex-col gap-4 text-center">
-      <h1 className="text-3xl font-extrabold">Un problème est survenu</h1>
-      <p className="text-[var(--text-dim)]">
+    <section role="alert" className="pokedex-card p-8 flex flex-col items-center gap-4 text-center">
+      <span className="text-4xl" aria-hidden="true">⚠️</span>
+      <h1 className="text-3xl font-extrabold tracking-tight">Un problème est survenu</h1>
+      <p className="text-[var(--text-dim)] max-w-sm">
         Cette page n'a pas pu s'afficher correctement. Vous pouvez repartir de l'accueil.
       </p>
-      <Link to="/" className="underline">
+      <Link
+        to="/"
+        className="rounded-[var(--radius-sm)] bg-[var(--accent)] px-4 py-2 font-bold text-[#0a0c12] hover:bg-[#ffd833] transition-colors"
+      >
         Retour à l'accueil
       </Link>
     </section>
