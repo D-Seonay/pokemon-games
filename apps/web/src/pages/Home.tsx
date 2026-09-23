@@ -63,13 +63,21 @@ function GameCard({
 
       <div className="grid gap-2.5 sm:grid-cols-2 pt-1">
         <Button onClick={() => go(soloPath)} className="flex items-center justify-center gap-2">
-          <span aria-hidden="true" className="text-xs">▶</span>
+          <span aria-hidden="true" className="text-xs">
+            ▶
+          </span>
           Solo
         </Button>
         {/* Le mode voyage avec la navigation : la room s'ouvre déjà réglée sur ce jeu,
             au lieu de laisser l'hôte le choisir une seconde fois dans le lobby. */}
-        <Button variant="ghost" onClick={() => go("/room/new", { mode })} className="flex items-center justify-center gap-2">
-          <span aria-hidden="true" className="text-xs opacity-75">👥</span>
+        <Button
+          variant="ghost"
+          onClick={() => go("/room/new", { mode })}
+          className="flex items-center justify-center gap-2"
+        >
+          <span aria-hidden="true" className="text-xs opacity-75">
+            👥
+          </span>
           Multijoueur
         </Button>
         {extra && (
@@ -78,7 +86,9 @@ function GameCard({
             className="sm:col-span-2 border-[color-mix(in_srgb,var(--accent)_40%,transparent)] bg-[color-mix(in_srgb,var(--accent)_8%,transparent)] hover:bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] text-[var(--text)] flex items-center justify-center gap-2"
             onClick={() => go(extra.path)}
           >
-            <span aria-hidden="true" className="text-[var(--accent)]">★</span>
+            <span aria-hidden="true" className="text-[var(--accent)]">
+              ★
+            </span>
             {extra.label}
           </Button>
         )}
@@ -131,7 +141,10 @@ export function Home() {
       {/* Trainer profile input card */}
       <div className="pokedex-card p-4 flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <label htmlFor={nicknameInputId} className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]">
+          <label
+            htmlFor={nicknameInputId}
+            className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]"
+          >
             Ton pseudo
           </label>
           {nickname.trim().length > 0 && (
@@ -184,7 +197,9 @@ export function Home() {
           onClick={() => go("/join")}
           className="flex items-center justify-center gap-2 py-3.5"
         >
-          <span aria-hidden="true" className="text-sm">🔑</span>
+          <span aria-hidden="true" className="text-sm">
+            🔑
+          </span>
           Rejoindre une room
         </Button>
         <Button
@@ -192,7 +207,9 @@ export function Home() {
           onClick={() => go("/pokedex")}
           className="flex items-center justify-center gap-2 py-3.5"
         >
-          <span aria-hidden="true" className="text-sm">📖</span>
+          <span aria-hidden="true" className="text-sm">
+            📖
+          </span>
           Pokédex
         </Button>
         <Button
@@ -200,7 +217,9 @@ export function Home() {
           onClick={() => go("/stats")}
           className="flex items-center justify-center gap-2 py-3.5"
         >
-          <span aria-hidden="true" className="text-sm">📊</span>
+          <span aria-hidden="true" className="text-sm">
+            📊
+          </span>
           Statistiques
         </Button>
       </div>

@@ -13,9 +13,15 @@ export function Scoreboard({
         <table className="w-full text-left text-sm">
           <thead className="border-b border-[var(--border)] bg-[var(--surface-2)] text-xs uppercase font-semibold tracking-wider text-[var(--text-dim)]">
             <tr>
-              <th scope="col" className="px-4 py-3">Rang</th>
-              <th scope="col" className="px-4 py-3">Joueur</th>
-              <th scope="col" className="px-4 py-3 text-right">Score</th>
+              <th scope="col" className="px-4 py-3">
+                Rang
+              </th>
+              <th scope="col" className="px-4 py-3">
+                Joueur
+              </th>
+              <th scope="col" className="px-4 py-3 text-right">
+                Score
+              </th>
             </tr>
           </thead>
           <tbody className="mono divide-y divide-[var(--border)]/50">
@@ -33,9 +39,21 @@ export function Scoreboard({
                 >
                   <td className="px-4 py-3">
                     <span className="inline-flex items-center gap-1.5">
-                      {standing.rank === 1 && <span className="select-none" aria-hidden="true">🥇</span>}
-                      {standing.rank === 2 && <span className="select-none" aria-hidden="true">🥈</span>}
-                      {standing.rank === 3 && <span className="select-none" aria-hidden="true">🥉</span>}
+                      {standing.rank === 1 && (
+                        <span className="select-none" aria-hidden="true">
+                          🥇
+                        </span>
+                      )}
+                      {standing.rank === 2 && (
+                        <span className="select-none" aria-hidden="true">
+                          🥈
+                        </span>
+                      )}
+                      {standing.rank === 3 && (
+                        <span className="select-none" aria-hidden="true">
+                          🥉
+                        </span>
+                      )}
                       {standing.rank}
                     </span>
                   </td>

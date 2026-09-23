@@ -118,7 +118,11 @@ export function Room() {
               <Button onClick={() => room.actions.playAgain(true)} className="flex-1">
                 Rejouer les mêmes numéros
               </Button>
-              <Button variant="ghost" onClick={() => room.actions.playAgain(false)} className="flex-1">
+              <Button
+                variant="ghost"
+                onClick={() => room.actions.playAgain(false)}
+                className="flex-1"
+              >
                 Nouvelle partie
               </Button>
             </div>
@@ -190,7 +194,8 @@ export function Room() {
             // invitait à resaisir pour ne récolter qu'un « Tu as déjà répondu ».
             <div className="pokedex-card p-6 flex flex-col items-center gap-3">
               <p className="text-lg">
-                Votre réponse : <strong className="text-[var(--accent)] font-bold">{answered.nameFr}</strong>
+                Votre réponse :{" "}
+                <strong className="text-[var(--accent)] font-bold">{answered.nameFr}</strong>
               </p>
               <div className="drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]">
                 <PokemonSprite pokemon={answered} size={96} />
@@ -281,12 +286,21 @@ export function Room() {
           </span>
           <ul className="flex flex-col gap-2">
             {state.players.map((player) => (
-              <li key={player.id} className="flex items-center justify-between p-2 rounded-[var(--radius-sm)] bg-[var(--surface-2)]">
-                <span className="font-semibold text-sm" style={{ opacity: player.connected ? 1 : 0.4 }}>
+              <li
+                key={player.id}
+                className="flex items-center justify-between p-2 rounded-[var(--radius-sm)] bg-[var(--surface-2)]"
+              >
+                <span
+                  className="font-semibold text-sm"
+                  style={{ opacity: player.connected ? 1 : 0.4 }}
+                >
                   {player.nickname}
                 </span>
                 {player.isHost && (
-                  <span className="text-xs font-bold text-[var(--accent)] flex items-center gap-1" aria-label="hôte">
+                  <span
+                    className="text-xs font-bold text-[var(--accent)] flex items-center gap-1"
+                    aria-label="hôte"
+                  >
                     👑 Hôte
                   </span>
                 )}

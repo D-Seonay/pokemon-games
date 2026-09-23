@@ -129,10 +129,18 @@ export function GameOver({
                 <th scope="col" className="hidden sm:table-cell px-4 py-3">
                   Cible
                 </th>
-                <th scope="col" className="px-4 py-3">Pokémon</th>
-                <th scope="col" className="px-4 py-3">Réponse</th>
-                <th scope="col" className="px-4 py-3">Écart</th>
-                <th scope="col" className="px-4 py-3">Points</th>
+                <th scope="col" className="px-4 py-3">
+                  Pokémon
+                </th>
+                <th scope="col" className="px-4 py-3">
+                  Réponse
+                </th>
+                <th scope="col" className="px-4 py-3">
+                  Écart
+                </th>
+                <th scope="col" className="px-4 py-3">
+                  Points
+                </th>
               </tr>
             </thead>
             <tbody className="mono divide-y divide-[var(--border)]/50">
@@ -149,7 +157,9 @@ export function GameOver({
                     <td className="hidden sm:table-cell px-4 py-2.5 text-[var(--text-dim)]">
                       {formatPokedexNumber(round.targetId, maxId)}
                     </td>
-                    <td className="px-4 py-2.5 font-semibold font-sans">{pokemonById(round.targetId).nameFr}</td>
+                    <td className="px-4 py-2.5 font-semibold font-sans">
+                      {pokemonById(round.targetId).nameFr}
+                    </td>
                     <td className="px-4 py-2.5">{answer?.nameFr ?? "—"}</td>
                     <td className="px-4 py-2.5 text-[var(--text-dim)]">
                       {round.answerId === null ? "—" : gapBetween(round.targetId, round.answerId)}
@@ -168,7 +178,9 @@ export function GameOver({
         </div>
       </div>
 
-      <Button onClick={onReplay} className="py-3.5 text-base">Rejouer</Button>
+      <Button onClick={onReplay} className="py-3.5 text-base">
+        Rejouer
+      </Button>
     </section>
   );
 }

@@ -58,10 +58,20 @@ export function GenerationPicker({ value, onChange }: Props) {
         })}
       </div>
       <div className="mt-3 flex gap-2">
-        <Button type="button" variant="ghost" onClick={() => onChange([...ALL_GENERATIONS])} className="text-xs py-2">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => onChange([...ALL_GENERATIONS])}
+          className="text-xs py-2"
+        >
           Tout sélectionner
         </Button>
-        <Button type="button" variant="ghost" onClick={() => onChange([1])} className="text-xs py-2">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => onChange([1])}
+          className="text-xs py-2"
+        >
           Gén 1 seulement
         </Button>
       </div>

@@ -197,14 +197,17 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s ease,
-              box-shadow 0.2s ease;
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .pokedex-card:hover {
   border-color: var(--border-hover);
-  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 203, 5, 0.08);
+  box-shadow:
+    0 8px 30px -4px rgba(0, 0, 0, 0.6),
+    0 0 15px rgba(255, 203, 5, 0.08);
 }
 
 /* Glow effects */
@@ -230,13 +233,24 @@ body {
 
 /* Shimmer animation */
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 @keyframes pulse-urgent {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px var(--danger)); }
-  50% { transform: scale(1.08); filter: drop-shadow(0 0 12px var(--danger)); }
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 4px var(--danger));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 12px var(--danger));
+  }
 }
 
 [data-state="danger"] svg {

@@ -60,7 +60,11 @@ export function JoinRoom() {
         </label>
 
         {rejected && (
-          <p role="status" className="text-xs font-medium rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--warn)_10%,transparent)] border border-[var(--warn)]/40 p-2.5" style={{ color: "var(--warn)" }}>
+          <p
+            role="status"
+            className="text-xs font-medium rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--warn)_10%,transparent)] border border-[var(--warn)]/40 p-2.5"
+            style={{ color: "var(--warn)" }}
+          >
             Les codes ne contiennent ni I, ni O, ni 0, ni 1 — pour éviter les confusions quand on se
             les dicte.
           </p>

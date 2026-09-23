@@ -70,8 +70,8 @@ export function Timer({
               state === "danger"
                 ? "drop-shadow(0 0 6px var(--danger))"
                 : state === "warn"
-                ? "drop-shadow(0 0 6px var(--warn))"
-                : "drop-shadow(0 0 4px rgba(61, 123, 255, 0.4))",
+                  ? "drop-shadow(0 0 6px var(--warn))"
+                  : "drop-shadow(0 0 4px rgba(61, 123, 255, 0.4))",
           }}
         />
         <text

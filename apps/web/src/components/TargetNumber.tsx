@@ -11,7 +11,10 @@ export function TargetNumber({ id, maxId }: { id: number; maxId: number }) {
         className="mono text-center leading-none tracking-tight glow-yellow mt-2"
         style={{ fontSize: "clamp(4.5rem, 18vw, 8.5rem)", color: "var(--accent)" }}
       >
-        <span aria-hidden="true" style={{ fontSize: "0.42em", color: "var(--text-dim)", marginRight: "0.05em" }}>
+        <span
+          aria-hidden="true"
+          style={{ fontSize: "0.42em", color: "var(--text-dim)", marginRight: "0.05em" }}
+        >
           #
         </span>
         <span>{String(id).padStart(width, "0")}</span>
